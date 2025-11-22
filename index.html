@@ -1,578 +1,510 @@
-import React, { useState, useEffect } from 'react';
-import { CreditCard, Send, LogOut, Plus, ArrowUpRight, ArrowDownLeft, Home, History, Loader } from 'lucide-react';
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bang - Wallet Digitale</title>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            margin: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
 
-const BangApp = () => {
-  const [firebaseLoaded, setFirebaseLoaded] = useState(false);
-  const [currentUser, setCurrentUser] = useState(null);
-  const [userData, setUserData] = useState(null);
-  const [activeTab, setActiveTab] = useState('home');
-  const [showTransferModal, setShowTransferModal] = useState(false);
-  const [transferAmount, setTransferAmount] = useState('');
-  const [recipientEmail, setRecipientEmail] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [initialLoading, setInitialLoading] = useState(true);
-  
-  // Login/Signup
-  const [authMode, setAuthMode] = useState('login');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [name, setName] = useState('');
-  const [transactions, setTransactions] = useState([]);
+    <script type="text/babel">
+        const { useState, useEffect } = React;
 
-  // Configurazione Firebase
-  const firebaseConfig = {
-    apiKey: "AIzaSyADTlqW9GSmEcz4lvdVs8oTAunCtPQTfxA",
-    authDomain: "bang-d64bf.firebaseapp.com",
-    databaseURL: "https://bang-d64bf-default-rtdb.firebaseio.com",
-    projectId: "bang-d64bf",
-    storageBucket: "bang-d64bf.firebasestorage.app",
-    messagingSenderId: "327241018824",
-    appId: "1:327241018824:web:304c5e64494f0abe2a24fd"
-  };
+        // Icone SVG
+        const CreditCard = () => (
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <rect width="20" height="14" x="2" y="5" rx="2"/>
+                <line x1="2" x2="22" y1="10" y2="10"/>
+            </svg>
+        );
 
-  // Carica Firebase
-  useEffect(() => {
-    const loadFirebase = async () => {
-      try {
-        // Carica Firebase scripts
-        const loadScript = (src) => {
-          return new Promise((resolve, reject) => {
-            const script = document.createElement('script');
-            script.src = src;
-            script.type = 'module';
-            script.onload = resolve;
-            script.onerror = reject;
-            document.head.appendChild(script);
-          });
+        const Send = () => (
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="m22 2-7 20-4-9-9-4Z"/>
+                <path d="M22 2 11 13"/>
+            </svg>
+        );
+
+        const LogOut = () => (
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+                <polyline points="16 17 21 12 16 7"/>
+                <line x1="21" x2="9" y1="12" y2="12"/>
+            </svg>
+        );
+
+        const Plus = () => (
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M5 12h14"/>
+                <path d="M12 5v14"/>
+            </svg>
+        );
+
+        const ArrowUpRight = () => (
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M7 17 17 7"/>
+                <path d="M7 7h10v10"/>
+            </svg>
+        );
+
+        const ArrowDownLeft = () => (
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M17 7 7 17"/>
+                <path d="M17 17H7V7"/>
+            </svg>
+        );
+
+        const Home = () => (
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+                <polyline points="9 22 9 12 15 12 15 22"/>
+            </svg>
+        );
+
+        const History = () => (
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
+                <path d="M3 3v5h5"/>
+                <path d="M12 7v5l4 2"/>
+            </svg>
+        );
+
+        const Loader = () => (
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="animate-spin">
+                <path d="M21 12a9 9 0 1 1-6.219-8.56"/>
+            </svg>
+        );
+
+        const BangApp = () => {
+            const [firebaseLoaded, setFirebaseLoaded] = useState(false);
+            const [currentUser, setCurrentUser] = useState(null);
+            const [userData, setUserData] = useState(null);
+            const [activeTab, setActiveTab] = useState('home');
+            const [showTransferModal, setShowTransferModal] = useState(false);
+            const [transferAmount, setTransferAmount] = useState('');
+            const [recipientEmail, setRecipientEmail] = useState('');
+            const [loading, setLoading] = useState(false);
+            const [initialLoading, setInitialLoading] = useState(true);
+            const [authMode, setAuthMode] = useState('login');
+            const [email, setEmail] = useState('');
+            const [password, setPassword] = useState('');
+            const [name, setName] = useState('');
+            const [transactions, setTransactions] = useState([]);
+
+            const firebaseConfig = {
+                apiKey: "AIzaSyADTlqW9GSmEcz4lvdVs8oTAunCtPQTfxA",
+                authDomain: "bang-d64bf.firebaseapp.com",
+                databaseURL: "https://bang-d64bf-default-rtdb.firebaseio.com",
+                projectId: "bang-d64bf",
+                storageBucket: "bang-d64bf.firebasestorage.app",
+                messagingSenderId: "327241018824",
+                appId: "1:327241018824:web:304c5e64494f0abe2a24fd"
+            };
+
+            useEffect(() => {
+                const loadFirebase = async () => {
+                    try {
+                        const { initializeApp } = await import('https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js');
+                        const { getDatabase, ref, set, get, push, onValue } = await import('https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js');
+                        const { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } = await import('https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js');
+
+                        const app = initializeApp(firebaseConfig);
+                        const db = getDatabase(app);
+                        const auth = getAuth(app);
+
+                        window.firebaseApp = app;
+                        window.firebaseDb = db;
+                        window.firebaseAuth = auth;
+                        window.firebaseRef = ref;
+                        window.firebaseSet = set;
+                        window.firebaseGet = get;
+                        window.firebasePush = push;
+                        window.firebaseOnValue = onValue;
+                        window.firebaseCreateUser = createUserWithEmailAndPassword;
+                        window.firebaseSignIn = signInWithEmailAndPassword;
+                        window.firebaseOnAuthStateChanged = onAuthStateChanged;
+                        window.firebaseSignOut = signOut;
+
+                        setFirebaseLoaded(true);
+
+                        onAuthStateChanged(auth, async (user) => {
+                            if (user) {
+                                setCurrentUser(user);
+                                const userRef = ref(db, 'users/' + user.uid);
+                                onValue(userRef, (snapshot) => {
+                                    const data = snapshot.val();
+                                    if (data) {
+                                        setUserData(data);
+                                    }
+                                    setInitialLoading(false);
+                                });
+
+                                const transactionsRef = ref(db, 'transactions');
+                                onValue(transactionsRef, (snapshot) => {
+                                    const data = snapshot.val();
+                                    if (data) {
+                                        const txArray = Object.entries(data).map(([id, tx]) => ({
+                                            id,
+                                            ...tx,
+                                            type: tx.from === user.uid ? 'sent' : 'received'
+                                        }))
+                                        .filter(tx => tx.from === user.uid || tx.to === user.uid)
+                                        .sort((a, b) => b.timestamp - a.timestamp);
+                                        setTransactions(txArray);
+                                    } else {
+                                        setTransactions([]);
+                                    }
+                                });
+                            } else {
+                                setCurrentUser(null);
+                                setUserData(null);
+                                setInitialLoading(false);
+                            }
+                        });
+                    } catch (error) {
+                        console.error('Errore caricamento Firebase:', error);
+                        setInitialLoading(false);
+                        alert('Errore nel caricamento di Firebase. Ricarica la pagina.');
+                    }
+                };
+                loadFirebase();
+            }, []);
+
+            const handleAuth = async () => {
+                if (!email || !password) {
+                    alert('Inserisci email e password');
+                    return;
+                }
+                setLoading(true);
+                try {
+                    const auth = window.firebaseAuth;
+                    const db = window.firebaseDb;
+                    const ref = window.firebaseRef;
+                    const set = window.firebaseSet;
+
+                    if (authMode === 'login') {
+                        await window.firebaseSignIn(auth, email, password);
+                    } else {
+                        if (!name) {
+                            alert('Inserisci il tuo nome');
+                            setLoading(false);
+                            return;
+                        }
+                        const userCredential = await window.firebaseCreateUser(auth, email, password);
+                        const user = userCredential.user;
+                        const newUserData = {
+                            uid: user.uid,
+                            email: user.email,
+                            name: name,
+                            balance: 0,
+                            iban: `IT60X${Math.random().toString().slice(2, 25)}`,
+                            createdAt: new Date().toISOString()
+                        };
+                        await set(ref(db, 'users/' + user.uid), newUserData);
+                        alert('Account creato con successo!');
+                    }
+                } catch (error) {
+                    console.error('Errore auth:', error);
+                    let errorMessage = 'Errore durante l\'autenticazione';
+                    if (error.code === 'auth/email-already-in-use') errorMessage = 'Email già registrata';
+                    else if (error.code === 'auth/weak-password') errorMessage = 'Password troppo debole (minimo 6 caratteri)';
+                    else if (error.code === 'auth/invalid-email') errorMessage = 'Email non valida';
+                    else if (error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password') errorMessage = 'Email o password errate';
+                    else if (error.code === 'auth/invalid-credential') errorMessage = 'Credenziali non valide';
+                    alert(errorMessage);
+                }
+                setLoading(false);
+                setEmail('');
+                setPassword('');
+                setName('');
+            };
+
+            const handleTransfer = async () => {
+                const amount = parseFloat(transferAmount);
+                if (!amount || amount <= 0) {
+                    alert('Inserisci un importo valido');
+                    return;
+                }
+                if (amount > userData.balance) {
+                    alert('Saldo insufficiente');
+                    return;
+                }
+                if (!recipientEmail || recipientEmail === userData.email) {
+                    alert('Email destinatario non valida');
+                    return;
+                }
+                setLoading(true);
+                try {
+                    const db = window.firebaseDb;
+                    const ref = window.firebaseRef;
+                    const set = window.firebaseSet;
+                    const get = window.firebaseGet;
+                    const push = window.firebasePush;
+
+                    const usersRef = ref(db, 'users');
+                    const snapshot = await get(usersRef);
+                    let recipientUid = null;
+                    let recipientName = null;
+                    if (snapshot.exists()) {
+                        const users = snapshot.val();
+                        for (const uid in users) {
+                            if (users[uid].email === recipientEmail) {
+                                recipientUid = uid;
+                                recipientName = users[uid].name;
+                                break;
+                            }
+                        }
+                    }
+                    if (!recipientUid) {
+                        alert('Destinatario non trovato');
+                        setLoading(false);
+                        return;
+                    }
+
+                    const now = new Date();
+                    const transaction = {
+                        amount,
+                        from: currentUser.uid,
+                        fromName: userData.name,
+                        fromEmail: userData.email,
+                        to: recipientUid,
+                        toName: recipientName,
+                        toEmail: recipientEmail,
+                        date: now.toISOString().split('T')[0],
+                        time: now.toTimeString().slice(0, 5),
+                        timestamp: now.getTime()
+                    };
+
+                    const newBalance = userData.balance - amount;
+                    await set(ref(db, 'users/' + currentUser.uid + '/balance'), newBalance);
+
+                    const recipientSnapshot = await get(ref(db, 'users/' + recipientUid));
+                    const recipientData = recipientSnapshot.val();
+                    const recipientNewBalance = (recipientData.balance || 0) + amount;
+                    await set(ref(db, 'users/' + recipientUid + '/balance'), recipientNewBalance);
+
+                    await push(ref(db, 'transactions'), transaction);
+
+                    setShowTransferModal(false);
+                    setTransferAmount('');
+                    setRecipientEmail('');
+                    alert(`€${amount.toFixed(2)} inviati con successo a ${recipientName}! ✅`);
+                } catch (error) {
+                    console.error('Errore trasferimento:', error);
+                    alert('Errore durante il trasferimento: ' + error.message);
+                }
+                setLoading(false);
+            };
+
+            const handleLogout = async () => {
+                try {
+                    await window.firebaseSignOut(window.firebaseAuth);
+                } catch (error) {
+                    console.error('Errore logout:', error);
+                }
+            };
+
+            if (!firebaseLoaded || initialLoading) {
+                return (
+                    <div className="min-h-screen bg-gradient-to-br from-purple-600 via-purple-700 to-indigo-800 flex items-center justify-center">
+                        <div className="text-center text-white">
+                            <div className="w-12 h-12 mx-auto mb-4"><Loader /></div>
+                            <p className="text-lg">Caricamento Bang...</p>
+                        </div>
+                    </div>
+                );
+            }
+
+            if (!currentUser || !userData) {
+                return (
+                    <div className="min-h-screen bg-gradient-to-br from-purple-600 via-purple-700 to-indigo-800 flex items-center justify-center p-4">
+                        <div className="bg-white rounded-3xl shadow-2xl w-full max-w-md p-8">
+                            <div className="text-center mb-8">
+                                <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-r from-purple-600 to-indigo-600 rounded-full mb-4">
+                                    <div className="w-10 h-10"><CreditCard /></div>
+                                </div>
+                                <h1 className="text-4xl font-bold text-gray-900">Bang</h1>
+                                <p className="text-gray-600 mt-2">Il tuo wallet digitale</p>
+                            </div>
+
+                            <div className="flex mb-6 bg-gray-100 rounded-lg p-1">
+                                <button onClick={() => setAuthMode('login')} className={`flex-1 py-2 rounded-md transition-all ${authMode === 'login' ? 'bg-white shadow-sm font-semibold' : ''}`}>Login</button>
+                                <button onClick={() => setAuthMode('signup')} className={`flex-1 py-2 rounded-md transition-all ${authMode === 'signup' ? 'bg-white shadow-sm font-semibold' : ''}`}>Registrati</button>
+                            </div>
+
+                            <div className="space-y-4">
+                                {authMode === 'signup' && (
+                                    <input type="text" placeholder="Nome completo" value={name} onChange={(e) => setName(e.target.value)} className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-600" />
+                                )}
+                                <input type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-600" />
+                                <input type="password" placeholder="Password (min 6 caratteri)" value={password} onChange={(e) => setPassword(e.target.value)} onKeyPress={(e) => e.key === 'Enter' && !loading && handleAuth()} className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-600" />
+                                <button onClick={handleAuth} disabled={loading} className="w-full bg-gradient-to-r from-purple-600 to-indigo-600 text-white py-3 rounded-lg font-semibold hover:shadow-lg transition-all disabled:opacity-50 flex items-center justify-center gap-2">
+                                    {loading ? <><Loader /> Caricamento...</> : (authMode === 'login' ? 'Accedi' : 'Crea Account')}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                );
+            }
+
+            return (
+                <div className="min-h-screen bg-gray-50">
+                    <div className="bg-gradient-to-r from-purple-600 to-indigo-600 text-white p-6 pb-32">
+                        <div className="max-w-4xl mx-auto">
+                            <div className="flex justify-between items-center mb-8">
+                                <div className="flex items-center gap-3">
+                                    <div className="w-8 h-8"><CreditCard /></div>
+                                    <h1 className="text-2xl font-bold">Bang</h1>
+                                </div>
+                                <button onClick={handleLogout} className="p-2 hover:bg-white/20 rounded-lg transition-all">
+                                    <div className="w-5 h-5"><LogOut /></div>
+                                </button>
+                            </div>
+                            <div className="text-center">
+                                <p className="text-purple-200 text-sm mb-2">Saldo disponibile</p>
+                                <h2 className="text-5xl font-bold mb-1">€{(userData.balance || 0).toFixed(2)}</h2>
+                                <p className="text-purple-200 text-sm">{userData.name}</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="max-w-4xl mx-auto px-4 -mt-20">
+                        <div className="bg-white rounded-2xl shadow-lg p-6 mb-6">
+                            <div className="grid grid-cols-2 gap-4">
+                                <button onClick={() => setShowTransferModal(true)} className="flex flex-col items-center gap-2 p-6 bg-gradient-to-br from-purple-500 to-indigo-500 text-white rounded-xl hover:shadow-lg transition-all">
+                                    <div className="w-8 h-8"><Send /></div>
+                                    <span className="font-semibold">Invia</span>
+                                </button>
+                                <button onClick={() => alert('Funzionalità in arrivo! 🚀')} className="flex flex-col items-center gap-2 p-6 bg-gradient-to-br from-green-500 to-emerald-500 text-white rounded-xl hover:shadow-lg transition-all">
+                                    <div className="w-8 h-8"><Plus /></div>
+                                    <span className="font-semibold">Ricarica</span>
+                                </button>
+                            </div>
+                            <div className="mt-6 pt-6 border-t">
+                                <p className="text-sm text-gray-600 mb-1">Il tuo IBAN</p>
+                                <p className="font-mono text-sm font-semibold">{userData.iban}</p>
+                            </div>
+                        </div>
+
+                        <div className="flex gap-2 mb-6">
+                            <button onClick={() => setActiveTab('home')} className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-lg font-semibold transition-all ${activeTab === 'home' ? 'bg-white shadow-md text-purple-600' : 'text-gray-600'}`}>
+                                <div className="w-5 h-5"><Home /></div>Home
+                            </button>
+                            <button onClick={() => setActiveTab('transactions')} className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-lg font-semibold transition-all ${activeTab === 'transactions' ? 'bg-white shadow-md text-purple-600' : 'text-gray-600'}`}>
+                                <div className="w-5 h-5"><History /></div>Transazioni
+                            </button>
+                        </div>
+
+                        {activeTab === 'home' && (
+                            <div className="bg-white rounded-2xl shadow-lg p-6 mb-6">
+                                <h3 className="text-xl font-bold mb-4">Ultime transazioni</h3>
+                                {transactions.length === 0 ? (
+                                    <div className="text-center py-12 text-gray-500">
+                                        <div className="w-12 h-12 mx-auto mb-3 opacity-50"><History /></div>
+                                        <p>Nessuna transazione ancora</p>
+                                        <p className="text-sm mt-1">Inizia a inviare denaro!</p>
+                                    </div>
+                                ) : (
+                                    <div className="space-y-3">
+                                        {transactions.slice(0, 5).map((tx) => (
+                                            <div key={tx.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-all">
+                                                <div className="flex items-center gap-3">
+                                                    <div className={`w-10 h-10 rounded-full flex items-center justify-center ${tx.type === 'received' ? 'bg-green-100' : 'bg-red-100'}`}>
+                                                        <div className={`w-5 h-5 ${tx.type === 'received' ? 'text-green-600' : 'text-red-600'}`}>
+                                                            {tx.type === 'received' ? <ArrowDownLeft /> : <ArrowUpRight />}
+                                                        </div>
+                                                    </div>
+                                                    <div>
+                                                        <p className="font-semibold">{tx.type === 'received' ? tx.fromName : tx.toName}</p>
+                                                        <p className="text-sm text-gray-500">{tx.date} - {tx.time}</p>
+                                                    </div>
+                                                </div>
+                                                <p className={`font-bold ${tx.type === 'received' ? 'text-green-600' : 'text-red-600'}`}>
+                                                    {tx.type === 'received' ? '+' : '-'}€{tx.amount.toFixed(2)}
+                                                </p>
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
+                        )}
+
+                        {activeTab === 'transactions' && (
+                            <div className="bg-white rounded-2xl shadow-lg p-6 mb-6">
+                                <h3 className="text-xl font-bold mb-4">Tutte le transazioni</h3>
+                                {transactions.length === 0 ? (
+                                    <div className="text-center py-12 text-gray-500">
+                                        <div className="w-12 h-12 mx-auto mb-3 opacity-50"><History /></div>
+                                        <p>Nessuna transazione</p>
+                                    </div>
+                                ) : (
+                                    <div className="space-y-3">
+                                        {transactions.map((tx) => (
+                                            <div key={tx.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                                                <div className="flex items-center gap-3">
+                                                    <div className={`w-10 h-10 rounded-full flex items-center justify-center ${tx.type === 'received' ? 'bg-green-100' : 'bg-red-100'}`}>
+                                                        <div className={`w-5 h-5 ${tx.type === 'received' ? 'text-green-600' : 'text-red-600'}`}>
+                                                            {tx.type === 'received' ? <ArrowDownLeft /> : <ArrowUpRight />}
+                                                        </div>
+                                                    </div>
+                                                    <div>
+                                                        <p className="font-semibold">{tx.type === 'received' ? tx.fromName : tx.toName}</p>
+                                                        <p className="text-sm text-gray-500">{tx.date} - {tx.time}</p>
+                                                    </div>
+                                                </div>
+                                                <p className={`font-bold ${tx.type === 'received' ? 'text-green-600' : 'text-red-600'}`}>
+                                                    {tx.type === 'received' ? '+' : '-'}€{tx.amount.toFixed(2)}
+                                                </p>
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
+                        )}
+                    </div>
+
+                    {showTransferModal && (
+                        <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
+                            <div className="bg-white rounded-2xl max-w-md w-full p-6">
+                                <h3 className="text-2xl font-bold mb-6">Invia denaro</h3>
+                                <div className="space-y-4">
+                                    <div>
+                                        <label className="block text-sm font-semibold text-gray-700 mb-2">Email destinatario</label>
+                                        <input type="email" value={recipientEmail} onChange={(e) => setRecipientEmail(e.target.value)} className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-600" placeholder="mario@email.com" />
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-semibold text-gray-700 mb-2">Importo</label>
+                                        <input type="number" step="0.01" value={transferAmount} onChange={(e) => setTransferAmount(e.target.value)} onKeyPress={(e) => e.key === 'Enter' && !loading && handleTransfer()} className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-600" placeholder="0.00" />
+                                        <p className="text-sm text-gray-500 mt-2">
+                                            Saldo disponibile: <span className="font-semibold">€{(userData.balance || 0).toFixed(2)}</span>
+                                        </p>
+                                    </div>
+                                    <div className="flex gap-3 mt-6">
+                                        <button onClick={() => setShowTransferModal(false)} disabled={loading} className="flex-1 py-3 bg-gray-200 rounded-lg font-semibold hover:bg-gray-300 transition-all disabled:opacity-50">Annulla</button>
+                                        <button onClick={handleTransfer} disabled={loading} className="flex-1 py-3 bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-lg font-semibold hover:shadow-lg transition-all disabled:opacity-50 flex items-center justify-center gap-2">
+                                            {loading ? <><Loader /> Invio...</> : 'Invia'}
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+                </div>
+            );
         };
 
-        // Usa Firebase da CDN
-        const { initializeApp } = await import('https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js');
-        const { getDatabase, ref, set, get, push, onValue } = await import('https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js');
-        const { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } = await import('https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js');
-
-        // Inizializza Firebase
-        const app = initializeApp(firebaseConfig);
-        const db = getDatabase(app);
-        const auth = getAuth(app);
-
-        // Salva globalmente
-        window.firebaseApp = app;
-        window.firebaseDb = db;
-        window.firebaseAuth = auth;
-        window.firebaseRef = ref;
-        window.firebaseSet = set;
-        window.firebaseGet = get;
-        window.firebasePush = push;
-        window.firebaseOnValue = onValue;
-        window.firebaseCreateUser = createUserWithEmailAndPassword;
-        window.firebaseSignIn = signInWithEmailAndPassword;
-        window.firebaseOnAuthStateChanged = onAuthStateChanged;
-        window.firebaseSignOut = signOut;
-
-        setFirebaseLoaded(true);
-
-        // Monitora autenticazione
-        onAuthStateChanged(auth, async (user) => {
-          if (user) {
-            setCurrentUser(user);
-            // Carica dati utente
-            const userRef = ref(db, 'users/' + user.uid);
-            onValue(userRef, (snapshot) => {
-              const data = snapshot.val();
-              if (data) {
-                setUserData(data);
-              }
-              setInitialLoading(false);
-            });
-
-            // Carica transazioni
-            const transactionsRef = ref(db, 'transactions');
-            onValue(transactionsRef, (snapshot) => {
-              const data = snapshot.val();
-              if (data) {
-                const txArray = Object.entries(data).map(([id, tx]) => ({
-                  id,
-                  ...tx,
-                  type: tx.from === user.uid ? 'sent' : 'received'
-                }))
-                .filter(tx => tx.from === user.uid || tx.to === user.uid)
-                .sort((a, b) => b.timestamp - a.timestamp);
-                
-                setTransactions(txArray);
-              } else {
-                setTransactions([]);
-              }
-            });
-          } else {
-            setCurrentUser(null);
-            setUserData(null);
-            setInitialLoading(false);
-          }
-        });
-
-      } catch (error) {
-        console.error('Errore caricamento Firebase:', error);
-        setInitialLoading(false);
-        alert('Errore nel caricamento di Firebase. Ricarica la pagina.');
-      }
-    };
-
-    loadFirebase();
-  }, []);
-
-  const handleAuth = async () => {
-    if (!email || !password) {
-      alert('Inserisci email e password');
-      return;
-    }
-
-    setLoading(true);
-    
-    try {
-      const auth = window.firebaseAuth;
-      const db = window.firebaseDb;
-      const ref = window.firebaseRef;
-      const set = window.firebaseSet;
-
-      if (authMode === 'login') {
-        await window.firebaseSignIn(auth, email, password);
-      } else {
-        if (!name) {
-          alert('Inserisci il tuo nome');
-          setLoading(false);
-          return;
-        }
-
-        const userCredential = await window.firebaseCreateUser(auth, email, password);
-        const user = userCredential.user;
-        
-        const newUserData = {
-          uid: user.uid,
-          email: user.email,
-          name: name,
-          balance: 0,
-          iban: `IT60X${Math.random().toString().slice(2, 25)}`,
-          createdAt: new Date().toISOString()
-        };
-        
-        await set(ref(db, 'users/' + user.uid), newUserData);
-        alert('Account creato con successo!');
-      }
-    } catch (error) {
-      console.error('Errore auth:', error);
-      let errorMessage = 'Errore durante l\'autenticazione';
-      
-      if (error.code === 'auth/email-already-in-use') {
-        errorMessage = 'Email già registrata';
-      } else if (error.code === 'auth/weak-password') {
-        errorMessage = 'Password troppo debole (minimo 6 caratteri)';
-      } else if (error.code === 'auth/invalid-email') {
-        errorMessage = 'Email non valida';
-      } else if (error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password') {
-        errorMessage = 'Email o password errate';
-      } else if (error.code === 'auth/invalid-credential') {
-        errorMessage = 'Credenziali non valide';
-      }
-      
-      alert(errorMessage);
-    }
-    
-    setLoading(false);
-    setEmail('');
-    setPassword('');
-    setName('');
-  };
-
-  const handleTransfer = async () => {
-    const amount = parseFloat(transferAmount);
-    if (!amount || amount <= 0) {
-      alert('Inserisci un importo valido');
-      return;
-    }
-    
-    if (amount > userData.balance) {
-      alert('Saldo insufficiente');
-      return;
-    }
-
-    if (!recipientEmail || recipientEmail === userData.email) {
-      alert('Email destinatario non valida');
-      return;
-    }
-
-    setLoading(true);
-
-    try {
-      const db = window.firebaseDb;
-      const ref = window.firebaseRef;
-      const set = window.firebaseSet;
-      const get = window.firebaseGet;
-      const push = window.firebasePush;
-
-      // Cerca destinatario
-      const usersRef = ref(db, 'users');
-      const snapshot = await get(usersRef);
-      
-      let recipientUid = null;
-      let recipientName = null;
-      
-      if (snapshot.exists()) {
-        const users = snapshot.val();
-        for (const uid in users) {
-          if (users[uid].email === recipientEmail) {
-            recipientUid = uid;
-            recipientName = users[uid].name;
-            break;
-          }
-        }
-      }
-
-      if (!recipientUid) {
-        alert('Destinatario non trovato');
-        setLoading(false);
-        return;
-      }
-
-      const now = new Date();
-      const transaction = {
-        amount,
-        from: currentUser.uid,
-        fromName: userData.name,
-        fromEmail: userData.email,
-        to: recipientUid,
-        toName: recipientName,
-        toEmail: recipientEmail,
-        date: now.toISOString().split('T')[0],
-        time: now.toTimeString().slice(0, 5),
-        timestamp: now.getTime()
-      };
-
-      // Aggiorna saldi
-      const newBalance = userData.balance - amount;
-      await set(ref(db, 'users/' + currentUser.uid + '/balance'), newBalance);
-
-      const recipientSnapshot = await get(ref(db, 'users/' + recipientUid));
-      const recipientData = recipientSnapshot.val();
-      const recipientNewBalance = (recipientData.balance || 0) + amount;
-      await set(ref(db, 'users/' + recipientUid + '/balance'), recipientNewBalance);
-
-      await push(ref(db, 'transactions'), transaction);
-
-      setShowTransferModal(false);
-      setTransferAmount('');
-      setRecipientEmail('');
-      
-      alert(`€${amount.toFixed(2)} inviati con successo a ${recipientName}! ✅`);
-    } catch (error) {
-      console.error('Errore trasferimento:', error);
-      alert('Errore durante il trasferimento: ' + error.message);
-    }
-
-    setLoading(false);
-  };
-
-  const handleLogout = async () => {
-    try {
-      await window.firebaseSignOut(window.firebaseAuth);
-    } catch (error) {
-      console.error('Errore logout:', error);
-    }
-  };
-
-  if (!firebaseLoaded || initialLoading) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-purple-600 via-purple-700 to-indigo-800 flex items-center justify-center">
-        <div className="text-center text-white">
-          <Loader className="w-12 h-12 animate-spin mx-auto mb-4" />
-          <p className="text-lg">Caricamento Bang...</p>
-        </div>
-      </div>
-    );
-  }
-
-  if (!currentUser || !userData) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-purple-600 via-purple-700 to-indigo-800 flex items-center justify-center p-4">
-        <div className="bg-white rounded-3xl shadow-2xl w-full max-w-md p-8">
-          <div className="text-center mb-8">
-            <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-r from-purple-600 to-indigo-600 rounded-full mb-4">
-              <CreditCard className="w-10 h-10 text-white" />
-            </div>
-            <h1 className="text-4xl font-bold text-gray-900">Bang</h1>
-            <p className="text-gray-600 mt-2">Il tuo wallet digitale</p>
-          </div>
-
-          <div className="flex mb-6 bg-gray-100 rounded-lg p-1">
-            <button
-              onClick={() => setAuthMode('login')}
-              className={`flex-1 py-2 rounded-md transition-all ${authMode === 'login' ? 'bg-white shadow-sm font-semibold' : ''}`}
-            >
-              Login
-            </button>
-            <button
-              onClick={() => setAuthMode('signup')}
-              className={`flex-1 py-2 rounded-md transition-all ${authMode === 'signup' ? 'bg-white shadow-sm font-semibold' : ''}`}
-            >
-              Registrati
-            </button>
-          </div>
-
-          <div className="space-y-4">
-            {authMode === 'signup' && (
-              <input
-                type="text"
-                placeholder="Nome completo"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-600"
-              />
-            )}
-            <input
-              type="email"
-              placeholder="Email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-600"
-            />
-            <input
-              type="password"
-              placeholder="Password (min 6 caratteri)"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              onKeyPress={(e) => e.key === 'Enter' && !loading && handleAuth()}
-              className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-600"
-            />
-            <button
-              onClick={handleAuth}
-              disabled={loading}
-              className="w-full bg-gradient-to-r from-purple-600 to-indigo-600 text-white py-3 rounded-lg font-semibold hover:shadow-lg transition-all disabled:opacity-50 flex items-center justify-center gap-2"
-            >
-              {loading ? (
-                <>
-                  <Loader className="w-5 h-5 animate-spin" />
-                  Caricamento...
-                </>
-              ) : (
-                authMode === 'login' ? 'Accedi' : 'Crea Account'
-              )}
-            </button>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="bg-gradient-to-r from-purple-600 to-indigo-600 text-white p-6 pb-32">
-        <div className="max-w-4xl mx-auto">
-          <div className="flex justify-between items-center mb-8">
-            <div className="flex items-center gap-3">
-              <CreditCard className="w-8 h-8" />
-              <h1 className="text-2xl font-bold">Bang</h1>
-            </div>
-            <button
-              onClick={handleLogout}
-              className="p-2 hover:bg-white/20 rounded-lg transition-all"
-            >
-              <LogOut className="w-5 h-5" />
-            </button>
-          </div>
-
-          <div className="text-center">
-            <p className="text-purple-200 text-sm mb-2">Saldo disponibile</p>
-            <h2 className="text-5xl font-bold mb-1">€{(userData.balance || 0).toFixed(2)}</h2>
-            <p className="text-purple-200 text-sm">{userData.name}</p>
-          </div>
-        </div>
-      </div>
-
-      <div className="max-w-4xl mx-auto px-4 -mt-20">
-        <div className="bg-white rounded-2xl shadow-lg p-6 mb-6">
-          <div className="grid grid-cols-2 gap-4">
-            <button
-              onClick={() => setShowTransferModal(true)}
-              className="flex flex-col items-center gap-2 p-6 bg-gradient-to-br from-purple-500 to-indigo-500 text-white rounded-xl hover:shadow-lg transition-all"
-            >
-              <Send className="w-8 h-8" />
-              <span className="font-semibold">Invia</span>
-            </button>
-            <button 
-              onClick={() => alert('Funzionalità in arrivo! 🚀')}
-              className="flex flex-col items-center gap-2 p-6 bg-gradient-to-br from-green-500 to-emerald-500 text-white rounded-xl hover:shadow-lg transition-all"
-            >
-              <Plus className="w-8 h-8" />
-              <span className="font-semibold">Ricarica</span>
-            </button>
-          </div>
-
-          <div className="mt-6 pt-6 border-t">
-            <p className="text-sm text-gray-600 mb-1">Il tuo IBAN</p>
-            <p className="font-mono text-sm font-semibold">{userData.iban}</p>
-          </div>
-        </div>
-
-        <div className="flex gap-2 mb-6">
-          <button
-            onClick={() => setActiveTab('home')}
-            className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-lg font-semibold transition-all ${
-              activeTab === 'home' ? 'bg-white shadow-md text-purple-600' : 'text-gray-600'
-            }`}
-          >
-            <Home className="w-5 h-5" />
-            Home
-          </button>
-          <button
-            onClick={() => setActiveTab('transactions')}
-            className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-lg font-semibold transition-all ${
-              activeTab === 'transactions' ? 'bg-white shadow-md text-purple-600' : 'text-gray-600'
-            }`}
-          >
-            <History className="w-5 h-5" />
-            Transazioni
-          </button>
-        </div>
-
-        {activeTab === 'home' && (
-          <div className="bg-white rounded-2xl shadow-lg p-6 mb-6">
-            <h3 className="text-xl font-bold mb-4">Ultime transazioni</h3>
-            {transactions.length === 0 ? (
-              <div className="text-center py-12 text-gray-500">
-                <History className="w-12 h-12 mx-auto mb-3 opacity-50" />
-                <p>Nessuna transazione ancora</p>
-                <p className="text-sm mt-1">Inizia a inviare denaro!</p>
-              </div>
-            ) : (
-              <div className="space-y-3">
-                {transactions.slice(0, 5).map((tx) => (
-                  <div key={tx.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-all">
-                    <div className="flex items-center gap-3">
-                      <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
-                        tx.type === 'received' ? 'bg-green-100' : 'bg-red-100'
-                      }`}>
-                        {tx.type === 'received' ? (
-                          <ArrowDownLeft className={`w-5 h-5 text-green-600`} />
-                        ) : (
-                          <ArrowUpRight className={`w-5 h-5 text-red-600`} />
-                        )}
-                      </div>
-                      <div>
-                        <p className="font-semibold">{tx.type === 'received' ? tx.fromName : tx.toName}</p>
-                        <p className="text-sm text-gray-500">{tx.date} - {tx.time}</p>
-                      </div>
-                    </div>
-                    <p className={`font-bold ${tx.type === 'received' ? 'text-green-600' : 'text-red-600'}`}>
-                      {tx.type === 'received' ? '+' : '-'}€{tx.amount.toFixed(2)}
-                    </p>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-        )}
-
-        {activeTab === 'transactions' && (
-          <div className="bg-white rounded-2xl shadow-lg p-6 mb-6">
-            <h3 className="text-xl font-bold mb-4">Tutte le transazioni</h3>
-            {transactions.length === 0 ? (
-              <div className="text-center py-12 text-gray-500">
-                <History className="w-12 h-12 mx-auto mb-3 opacity-50" />
-                <p>Nessuna transazione</p>
-              </div>
-            ) : (
-              <div className="space-y-3">
-                {transactions.map((tx) => (
-                  <div key={tx.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
-                    <div className="flex items-center gap-3">
-                      <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
-                        tx.type === 'received' ? 'bg-green-100' : 'bg-red-100'
-                      }`}>
-                        {tx.type === 'received' ? (
-                          <ArrowDownLeft className={`w-5 h-5 text-green-600`} />
-                        ) : (
-                          <ArrowUpRight className={`w-5 h-5 text-red-600`} />
-                        )}
-                      </div>
-                      <div>
-                        <p className="font-semibold">{tx.type === 'received' ? tx.fromName : tx.toName}</p>
-                        <p className="text-sm text-gray-500">{tx.date} - {tx.time}</p>
-                      </div>
-                    </div>
-                    <p className={`font-bold ${tx.type === 'received' ? 'text-green-600' : 'text-red-600'}`}>
-                      {tx.type === 'received' ? '+' : '-'}€{tx.amount.toFixed(2)}
-                    </p>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-        )}
-      </div>
-
-      {showTransferModal && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-2xl max-w-md w-full p-6">
-            <h3 className="text-2xl font-bold mb-6">Invia denaro</h3>
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
-                  Email destinatario
-                </label>
-                <input
-                  type="email"
-                  value={recipientEmail}
-                  onChange={(e) => setRecipientEmail(e.target.value)}
-                  className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-600"
-                  placeholder="mario@email.com"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
-                  Importo
-                </label>
-                <input
-                  type="number"
-                  step="0.01"
-                  value={transferAmount}
-                  onChange={(e) => setTransferAmount(e.target.value)}
-                  onKeyPress={(e) => e.key === 'Enter' && !loading && handleTransfer()}
-                  className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-600"
-                  placeholder="0.00"
-                />
-                <p className="text-sm text-gray-500 mt-2">
-                  Saldo disponibile: <span className="font-semibold">€{(userData.balance || 0).toFixed(2)}</span>
-                </p>
-              </div>
-              <div className="flex gap-3 mt-6">
-                <button
-                  onClick={() => setShowTransferModal(false)}
-                  disabled={loading}
-                  className="flex-1 py-3 bg-gray-200 rounded-lg font-semibold hover:bg-gray-300 transition-all disabled:opacity-50"
-                >
-                  Annulla
-                </button>
-                <button
-                  onClick={handleTransfer}
-                  disabled={loading}
-                  className="flex-1 py-3 bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-lg font-semibold hover:shadow-lg transition-all disabled:opacity-50 flex items-center justify-center gap-2"
-                >
-                  {loading ? (
-                    <>
-                      <Loader className="w-5 h-5 animate-spin" />
-                      Invio...
-                    </>
-                  ) : (
-                    'Invia'
-                  )}
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-    </div>
-  );
-};
-
-export default BangApp;
+        ReactDOM.render(<BangApp />, document.getElementById('root'));
+    </script>
+</body>
+</html>

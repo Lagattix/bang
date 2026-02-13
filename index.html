@@ -3,38 +3,35 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bang</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
-    
+    <title>TrackPack - Traccia i Tuoi Pacchi</title>
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary: #6366f1;
-            --primary-dark: #4f46e5;
-            --secondary: #8b5cf6;
-            --danger: #ef4444;
-            --success: #10b981;
-            --warning: #f59e0b;
-            
-            --bg-primary: #0a0a0f;
-            --bg-secondary: #14141f;
-            --bg-tertiary: #1c1c2e;
-            --bg-card: #1e1e32;
-            
+            /* Color Palette - Cyber Neon */
+            --primary: #00ff9d;
+            --primary-dark: #00cc7d;
+            --secondary: #ff006e;
+            --accent: #8338ec;
+            --bg-dark: #0a0e27;
+            --bg-darker: #050814;
             --text-primary: #ffffff;
-            --text-secondary: #a0a0b8;
-            --text-tertiary: #6b6b8f;
-            
+            --text-secondary: #a8b2d1;
             --border: rgba(255, 255, 255, 0.1);
-            --shadow: rgba(0, 0, 0, 0.3);
+            --card-bg: rgba(15, 23, 42, 0.8);
+            --success: #00ff9d;
+            --warning: #ffbe0b;
+            --error: #ff006e;
             
-            --radius-sm: 8px;
-            --radius-md: 12px;
-            --radius-lg: 16px;
-            --radius-xl: 24px;
+            /* Spacing */
+            --spacing-xs: 0.5rem;
+            --spacing-sm: 1rem;
+            --spacing-md: 1.5rem;
+            --spacing-lg: 2rem;
+            --spacing-xl: 3rem;
             
-            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            /* Typography */
+            --font-display: 'Syne', sans-serif;
+            --font-mono: 'Space Mono', monospace;
         }
 
         * {
@@ -44,1402 +41,1186 @@
         }
 
         body {
-            font-family: 'Outfit', sans-serif;
-            background: var(--bg-primary);
+            font-family: var(--font-display);
+            background: var(--bg-darker);
             color: var(--text-primary);
-            min-height: 100vh;
+            line-height: 1.6;
             overflow-x: hidden;
+            min-height: 100vh;
         }
 
-        body::before {
-            content: '';
+        /* Background Effects */
+        .background-grid {
             position: fixed;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: 
-                radial-gradient(circle at 20% 50%, rgba(99, 102, 241, 0.15) 0%, transparent 50%),
-                radial-gradient(circle at 80% 80%, rgba(139, 92, 246, 0.15) 0%, transparent 50%);
-            animation: gradientShift 20s ease infinite;
-            pointer-events: none;
-            z-index: -1;
-        }
-
-        @keyframes gradientShift {
-            0%, 100% { transform: translate(0, 0) rotate(0deg); }
-            50% { transform: translate(-5%, -5%) rotate(5deg); }
-        }
-
-        .header {
-            background: rgba(20, 20, 31, 0.8);
-            backdrop-filter: blur(20px);
-            border-bottom: 1px solid var(--border);
-            position: sticky;
             top: 0;
-            z-index: 100;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                linear-gradient(rgba(0, 255, 157, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 255, 157, 0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+            z-index: 0;
+            pointer-events: none;
         }
 
-        .header-content {
+        .gradient-orb {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(120px);
+            opacity: 0.3;
+            pointer-events: none;
+            animation: float 20s ease-in-out infinite;
+        }
+
+        .orb-1 {
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, var(--primary), transparent);
+            top: -200px;
+            right: -200px;
+            animation-delay: 0s;
+        }
+
+        .orb-2 {
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, var(--accent), transparent);
+            bottom: -150px;
+            left: -150px;
+            animation-delay: -10s;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0) rotate(0deg); }
+            33% { transform: translate(50px, -50px) rotate(120deg); }
+            66% { transform: translate(-30px, 30px) rotate(240deg); }
+        }
+
+        /* Container */
+        .container {
             max-width: 1200px;
             margin: 0 auto;
-            padding: 1.5rem 2rem;
+            padding: var(--spacing-lg);
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Header */
+        .header {
             display: flex;
             justify-content: space-between;
             align-items: center;
+            padding: var(--spacing-md) 0;
+            margin-bottom: var(--spacing-xl);
+            border-bottom: 1px solid var(--border);
+            animation: slideDown 0.6s ease-out;
         }
 
         .logo {
             display: flex;
             align-items: center;
-            gap: 1rem;
+            gap: var(--spacing-sm);
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--primary);
         }
 
-        .logo h1 {
-            font-size: 1.5rem;
-            font-weight: 700;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
+        .logo svg {
+            color: var(--primary);
+            filter: drop-shadow(0 0 8px var(--primary));
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+        }
+
+        .user-email {
+            font-family: var(--font-mono);
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+
+        /* Search Section */
+        .search-section {
+            text-align: center;
+            margin-bottom: var(--spacing-xl);
+            animation: fadeInUp 0.8s ease-out 0.2s backwards;
+        }
+
+        .main-title {
+            font-size: clamp(2.5rem, 8vw, 4rem);
+            font-weight: 800;
+            line-height: 1.1;
+            margin-bottom: var(--spacing-sm);
+            background: linear-gradient(135deg, var(--text-primary) 0%, var(--primary) 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
         }
 
-        .header-actions {
-            display: flex;
-            gap: 0.75rem;
+        .title-accent {
+            display: block;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
 
-        .btn-icon {
-            background: var(--bg-tertiary);
-            border: 1px solid var(--border);
+        .subtitle {
+            font-size: 1.125rem;
             color: var(--text-secondary);
-            width: 44px;
-            height: 44px;
-            border-radius: var(--radius-md);
+            margin-bottom: var(--spacing-xl);
+            font-weight: 400;
+        }
+
+        /* Search Box */
+        .search-box {
+            display: flex;
+            gap: var(--spacing-sm);
+            max-width: 700px;
+            margin: 0 auto var(--spacing-lg);
+        }
+
+        .input-wrapper {
+            flex: 1;
+            position: relative;
+        }
+
+        .search-icon {
+            position: absolute;
+            left: var(--spacing-md);
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-secondary);
+            pointer-events: none;
+        }
+
+        #trackingInput {
+            width: 100%;
+            padding: var(--spacing-md) var(--spacing-md) var(--spacing-md) 3.5rem;
+            background: var(--card-bg);
+            border: 2px solid var(--border);
+            border-radius: 16px;
+            color: var(--text-primary);
+            font-family: var(--font-mono);
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(20px);
+        }
+
+        #trackingInput:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(0, 255, 157, 0.1), 0 0 20px rgba(0, 255, 157, 0.2);
+        }
+
+        #trackingInput::placeholder {
+            color: var(--text-secondary);
+        }
+
+        /* Buttons */
+        .btn-primary,
+        .btn-secondary,
+        .btn-save {
+            padding: var(--spacing-md) var(--spacing-lg);
+            border-radius: 16px;
+            font-family: var(--font-display);
+            font-size: 1rem;
+            font-weight: 600;
             cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+            display: inline-flex;
+            align-items: center;
+            gap: var(--spacing-xs);
+            white-space: nowrap;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+            color: var(--bg-dark);
+            box-shadow: 0 4px 20px rgba(0, 255, 157, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(0, 255, 157, 0.4);
+        }
+
+        .btn-primary:active {
+            transform: translateY(0);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-primary);
+            border: 2px solid var(--border);
+            backdrop-filter: blur(20px);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: var(--primary);
+        }
+
+        .btn-save {
+            background: rgba(0, 255, 157, 0.1);
+            color: var(--primary);
+            border: 2px solid var(--primary);
+        }
+
+        .btn-save:hover {
+            background: rgba(0, 255, 157, 0.2);
+        }
+
+        /* Quick Actions */
+        .quick-actions {
+            display: flex;
+            gap: var(--spacing-sm);
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .quick-btn {
+            padding: var(--spacing-sm) var(--spacing-md);
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            color: var(--text-secondary);
+            font-family: var(--font-display);
+            font-size: 0.875rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
             display: flex;
             align-items: center;
-            justify-content: center;
-            transition: var(--transition);
+            gap: var(--spacing-xs);
+            backdrop-filter: blur(10px);
         }
 
-        .btn-icon:hover {
-            background: var(--bg-card);
-            color: var(--text-primary);
+        .quick-btn:hover {
+            background: rgba(0, 255, 157, 0.1);
             border-color: var(--primary);
+            color: var(--primary);
             transform: translateY(-2px);
         }
 
-        .main-content {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 2rem;
+        /* Tracking Results */
+        .tracking-results {
+            margin-bottom: var(--spacing-xl);
+            animation: fadeInUp 0.6s ease-out;
         }
 
-        .auth-section {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            min-height: calc(100vh - 200px);
-        }
-
-        .auth-card {
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: var(--radius-xl);
-            padding: 3rem;
-            width: 100%;
-            max-width: 450px;
-            box-shadow: 0 20px 60px var(--shadow);
-        }
-
-        .auth-header {
-            text-align: center;
-            margin-bottom: 2rem;
-        }
-
-        .auth-header h2 {
-            font-size: 2rem;
-            font-weight: 700;
-            margin-bottom: 0.5rem;
-        }
-
-        .auth-header p {
-            color: var(--text-secondary);
-        }
-
-        .auth-form {
-            display: flex;
-            flex-direction: column;
-            gap: 1rem;
-        }
-
-        .balance-card {
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            border-radius: var(--radius-xl);
-            padding: 2.5rem;
-            margin-bottom: 3rem;
-            box-shadow: 0 20px 60px rgba(99, 102, 241, 0.3);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .balance-card::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            right: -20%;
-            width: 300px;
-            height: 300px;
-            background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
-            border-radius: 50%;
-        }
-
-        .balance-label {
-            font-size: 0.875rem;
-            opacity: 0.9;
-            margin-bottom: 0.5rem;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            font-weight: 600;
-        }
-
-        .balance-amount {
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 3rem;
-            font-weight: 700;
-            margin-bottom: 1.5rem;
-        }
-
-        .balance-footer {
+        .results-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            opacity: 0.9;
+            margin-bottom: var(--spacing-md);
         }
 
-        .btn-text {
-            background: rgba(255, 255, 255, 0.2);
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            color: white;
-            padding: 0.75rem 1.5rem;
-            border-radius: var(--radius-md);
+        .results-header h2 {
+            font-size: 1.75rem;
+            font-weight: 700;
+        }
+
+        #trackingContent {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: var(--spacing-lg);
+            backdrop-filter: blur(20px);
+        }
+
+        .package-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: var(--spacing-lg);
+            padding-bottom: var(--spacing-md);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .package-info h3 {
+            font-size: 1.5rem;
+            margin-bottom: var(--spacing-xs);
+        }
+
+        .tracking-number {
+            font-family: var(--font-mono);
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+        }
+
+        .status-badge {
+            padding: var(--spacing-xs) var(--spacing-md);
+            border-radius: 20px;
             font-size: 0.875rem;
             font-weight: 600;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            transition: var(--transition);
+            font-family: var(--font-mono);
         }
 
-        .btn-text:hover {
-            background: rgba(255, 255, 255, 0.3);
-            transform: translateY(-2px);
+        .status-in-transit {
+            background: rgba(255, 190, 11, 0.2);
+            color: var(--warning);
+            border: 1px solid var(--warning);
+        }
+
+        .status-delivered {
+            background: rgba(0, 255, 157, 0.2);
+            color: var(--success);
+            border: 1px solid var(--success);
+        }
+
+        .status-pending {
+            background: rgba(168, 178, 209, 0.2);
+            color: var(--text-secondary);
+            border: 1px solid var(--text-secondary);
+        }
+
+        /* Timeline */
+        .timeline {
+            position: relative;
+            padding-left: 2rem;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 8px;
+            top: 12px;
+            bottom: 12px;
+            width: 2px;
+            background: linear-gradient(180deg, var(--primary) 0%, var(--border) 100%);
+        }
+
+        .timeline-item {
+            position: relative;
+            margin-bottom: var(--spacing-md);
+            animation: slideInLeft 0.5s ease-out backwards;
+        }
+
+        .timeline-item:nth-child(1) { animation-delay: 0.1s; }
+        .timeline-item:nth-child(2) { animation-delay: 0.2s; }
+        .timeline-item:nth-child(3) { animation-delay: 0.3s; }
+        .timeline-item:nth-child(4) { animation-delay: 0.4s; }
+        .timeline-item:nth-child(5) { animation-delay: 0.5s; }
+
+        .timeline-dot {
+            position: absolute;
+            left: -1.95rem;
+            top: 4px;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: var(--primary);
+            box-shadow: 0 0 0 4px var(--bg-dark), 0 0 20px var(--primary);
+        }
+
+        .timeline-item:not(:first-child) .timeline-dot {
+            background: var(--border);
+            box-shadow: 0 0 0 4px var(--bg-dark);
+        }
+
+        .timeline-content {
+            background: rgba(255, 255, 255, 0.03);
+            padding: var(--spacing-md);
+            border-radius: 12px;
+            border: 1px solid var(--border);
+        }
+
+        .timeline-title {
+            font-weight: 600;
+            margin-bottom: var(--spacing-xs);
+            color: var(--text-primary);
+        }
+
+        .timeline-location {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            margin-bottom: var(--spacing-xs);
+        }
+
+        .timeline-time {
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+        }
+
+        /* Saved Packages */
+        .saved-packages {
+            animation: fadeInUp 0.8s ease-out 0.4s backwards;
         }
 
         .section-title {
-            font-size: 1.5rem;
+            font-size: 1.75rem;
             font-weight: 700;
-            margin-bottom: 1.5rem;
+            margin-bottom: var(--spacing-md);
         }
 
-        .cards-grid {
+        .packages-list {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-            gap: 1.5rem;
+            gap: var(--spacing-md);
         }
 
-        .card-item {
-            background: var(--bg-card);
+        .package-card {
+            background: var(--card-bg);
             border: 1px solid var(--border);
-            border-radius: var(--radius-lg);
-            padding: 1.5rem;
+            border-radius: 16px;
+            padding: var(--spacing-md);
             cursor: pointer;
-            transition: var(--transition);
-            position: relative;
-            overflow: hidden;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(20px);
+            animation: scaleIn 0.4s ease-out backwards;
         }
 
-        .card-item::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 4px;
-            background: linear-gradient(90deg, var(--primary), var(--secondary));
-            transform: scaleX(0);
-            transition: var(--transition);
-        }
-
-        .card-item:hover {
+        .package-card:hover {
             transform: translateY(-4px);
             border-color: var(--primary);
-            box-shadow: 0 12px 40px rgba(99, 102, 241, 0.2);
+            box-shadow: 0 8px 30px rgba(0, 255, 157, 0.2);
         }
 
-        .card-item:hover::before {
-            transform: scaleX(1);
-        }
-
-        .card-mini {
-            background: linear-gradient(135deg, #2d2d44, #3d3d5c);
-            border-radius: var(--radius-md);
-            padding: 1.5rem;
-            margin-bottom: 1rem;
-            position: relative;
-            height: 180px;
+        .package-card-header {
             display: flex;
-            flex-direction: column;
             justify-content: space-between;
+            align-items: start;
+            margin-bottom: var(--spacing-sm);
         }
 
-        .card-mini.visa {
-            background: linear-gradient(135deg, #1e3a8a, #3b82f6);
-        }
-
-        .card-mini.mastercard {
-            background: linear-gradient(135deg, #991b1b, #ef4444);
-        }
-
-        .card-mini.amex {
-            background: linear-gradient(135deg, #065f46, #10b981);
-        }
-
-        .card-chip-mini {
-            width: 40px;
-            height: 30px;
-            background: linear-gradient(135deg, #fbbf24, #f59e0b);
-            border-radius: 6px;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .card-chip-mini::before {
-            content: '';
-            position: absolute;
-            inset: 4px;
-            background: repeating-linear-gradient(
-                90deg,
-                transparent,
-                transparent 2px,
-                rgba(0, 0, 0, 0.1) 2px,
-                rgba(0, 0, 0, 0.1) 4px
-            );
-        }
-
-        .card-number-mini {
-            font-family: 'JetBrains Mono', monospace;
+        .package-card h4 {
             font-size: 1.125rem;
-            letter-spacing: 0.05em;
-            margin: 1rem 0;
+            margin-bottom: var(--spacing-xs);
         }
 
-        .card-info-mini {
-            display: flex;
-            justify-content: space-between;
+        .package-card .tracking-number {
             font-size: 0.75rem;
-            text-transform: uppercase;
         }
 
-        .card-meta {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            color: var(--text-secondary);
-            font-size: 0.875rem;
-        }
-
-        .card-balance {
-            font-family: 'JetBrains Mono', monospace;
+        .delete-btn {
+            background: none;
+            border: none;
+            color: var(--error);
+            cursor: pointer;
+            padding: var(--spacing-xs);
             font-size: 1.25rem;
-            font-weight: 600;
-            color: var(--text-primary);
+            transition: all 0.3s ease;
+            opacity: 0.6;
         }
 
+        .delete-btn:hover {
+            opacity: 1;
+            transform: scale(1.2);
+        }
+
+        .package-status {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            margin-top: var(--spacing-sm);
+        }
+
+        /* Empty State */
         .empty-state {
             text-align: center;
-            padding: 4rem 2rem;
+            padding: var(--spacing-xl);
+            color: var(--text-secondary);
         }
 
         .empty-state svg {
-            opacity: 0.3;
-            margin-bottom: 1.5rem;
-        }
-
-        .empty-state h3 {
-            font-size: 1.5rem;
-            margin-bottom: 0.5rem;
+            color: var(--border);
+            margin-bottom: var(--spacing-md);
         }
 
         .empty-state p {
-            color: var(--text-secondary);
-            margin-bottom: 2rem;
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: var(--spacing-xs);
         }
 
+        .empty-state span {
+            font-size: 0.875rem;
+        }
+
+        /* Toast Notifications */
+        .toast {
+            position: fixed;
+            bottom: var(--spacing-lg);
+            right: var(--spacing-lg);
+            background: var(--card-bg);
+            border: 1px solid var(--primary);
+            border-radius: 12px;
+            padding: var(--spacing-md) var(--spacing-lg);
+            color: var(--text-primary);
+            box-shadow: 0 8px 30px rgba(0, 255, 157, 0.3);
+            backdrop-filter: blur(20px);
+            transform: translateY(150%);
+            transition: transform 0.3s ease;
+            z-index: 1000;
+            max-width: 400px;
+        }
+
+        .toast.show {
+            transform: translateY(0);
+        }
+
+        /* Modal */
         .modal {
             display: none;
             position: fixed;
             top: 0;
             left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.8);
+            width: 100%;
+            height: 100%;
+            background: rgba(5, 8, 20, 0.95);
             backdrop-filter: blur(10px);
             z-index: 1000;
             align-items: center;
             justify-content: center;
-            padding: 2rem;
-            animation: fadeIn 0.3s;
         }
 
         .modal.active {
             display: flex;
         }
 
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-
         .modal-content {
-            background: var(--bg-card);
+            background: var(--card-bg);
             border: 1px solid var(--border);
-            border-radius: var(--radius-xl);
-            max-width: 600px;
-            width: 100%;
-            max-height: 90vh;
-            overflow-y: auto;
-            animation: slideUp 0.3s;
+            border-radius: 20px;
+            padding: var(--spacing-xl);
+            max-width: 450px;
+            width: 90%;
+            position: relative;
+            animation: scaleIn 0.3s ease-out;
+            backdrop-filter: blur(20px);
         }
 
-        @keyframes slideUp {
-            from {
-                transform: translateY(50px);
-                opacity: 0;
-            }
-            to {
-                transform: translateY(0);
-                opacity: 1;
-            }
+        .modal-content h3 {
+            font-size: 1.75rem;
+            margin-bottom: var(--spacing-sm);
         }
 
-        .modal-header {
-            padding: 2rem;
-            border-bottom: 1px solid var(--border);
+        .modal-content p {
+            color: var(--text-secondary);
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .auth-form {
             display: flex;
-            justify-content: space-between;
-            align-items: center;
+            flex-direction: column;
+            gap: var(--spacing-sm);
         }
 
-        .modal-header h2 {
-            font-size: 1.5rem;
-            font-weight: 700;
+        .auth-form input {
+            padding: var(--spacing-md);
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            color: var(--text-primary);
+            font-family: var(--font-display);
+            font-size: 1rem;
+        }
+
+        .auth-form input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(0, 255, 157, 0.1);
         }
 
         .btn-close {
-            background: transparent;
+            position: absolute;
+            top: var(--spacing-md);
+            right: var(--spacing-md);
+            background: none;
             border: none;
             color: var(--text-secondary);
+            font-size: 1.5rem;
             cursor: pointer;
-            padding: 0.5rem;
-            border-radius: var(--radius-sm);
-            transition: var(--transition);
+            padding: var(--spacing-xs);
+            line-height: 1;
+            transition: all 0.3s ease;
         }
 
         .btn-close:hover {
-            background: var(--bg-tertiary);
-            color: var(--text-primary);
+            color: var(--error);
+            transform: rotate(90deg);
         }
 
-        .modal-body {
-            padding: 2rem;
+        /* Loading State */
+        .loading {
+            text-align: center;
+            padding: var(--spacing-xl);
         }
 
-        .card-preview {
-            background: linear-gradient(135deg, #6366f1, #8b5cf6);
-            border-radius: var(--radius-lg);
-            padding: 2rem;
-            margin-bottom: 2rem;
-            min-height: 200px;
-            position: relative;
-            overflow: hidden;
-            box-shadow: 0 20px 60px rgba(99, 102, 241, 0.4);
-        }
-
-        .card-preview.large {
-            min-height: 240px;
-            padding: 2.5rem;
-        }
-
-        .card-preview::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            right: -20%;
-            width: 300px;
-            height: 300px;
-            background: radial-gradient(circle, rgba(255, 255, 255, 0.15) 0%, transparent 70%);
-            border-radius: 50%;
-        }
-
-        .card-preview.visa {
-            background: linear-gradient(135deg, #1e3a8a, #3b82f6);
-        }
-
-        .card-preview.mastercard {
-            background: linear-gradient(135deg, #991b1b, #ef4444);
-        }
-
-        .card-preview.amex {
-            background: linear-gradient(135deg, #065f46, #10b981);
-        }
-
-        .card-chip {
+        .spinner {
             width: 50px;
-            height: 40px;
-            background: linear-gradient(135deg, #fbbf24, #f59e0b);
-            border-radius: 8px;
-            margin-bottom: 2rem;
-            position: relative;
-            overflow: hidden;
+            height: 50px;
+            border: 3px solid var(--border);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto var(--spacing-md);
         }
 
-        .card-chip::before {
-            content: '';
-            position: absolute;
-            inset: 5px;
-            background: repeating-linear-gradient(
-                90deg,
-                transparent,
-                transparent 3px,
-                rgba(0, 0, 0, 0.1) 3px,
-                rgba(0, 0, 0, 0.1) 6px
-            );
+        @keyframes spin {
+            to { transform: rotate(360deg); }
         }
 
-        .card-number {
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 1.5rem;
-            letter-spacing: 0.1em;
-            margin-bottom: 2rem;
-            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
-        .card-info {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-end;
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
-        .card-holder,
-        .card-expiry {
-            font-size: 0.875rem;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            opacity: 0.95;
+        @keyframes slideInLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
         }
 
-        .form {
-            display: flex;
-            flex-direction: column;
-            gap: 1.5rem;
+        @keyframes scaleIn {
+            from {
+                opacity: 0;
+                transform: scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
         }
 
-        .form-group {
-            display: flex;
-            flex-direction: column;
-            gap: 0.5rem;
-        }
-
-        .form-group label {
-            font-size: 0.875rem;
-            font-weight: 600;
-            color: var(--text-secondary);
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-        }
-
-        .form-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 1rem;
-        }
-
-        .input {
-            background: var(--bg-tertiary);
-            border: 1px solid var(--border);
-            color: var(--text-primary);
-            padding: 1rem;
-            border-radius: var(--radius-md);
-            font-size: 1rem;
-            font-family: 'Outfit', sans-serif;
-            transition: var(--transition);
-        }
-
-        .input:focus {
-            outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
-        }
-
-        .input::placeholder {
-            color: var(--text-tertiary);
-        }
-
-        .btn {
-            padding: 1rem 2rem;
-            border: none;
-            border-radius: var(--radius-md);
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: var(--transition);
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.5rem;
-        }
-
-        .btn-primary {
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            color: white;
-        }
-
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 24px rgba(99, 102, 241, 0.4);
-        }
-
-        .btn-secondary {
-            background: var(--bg-tertiary);
-            color: var(--text-primary);
-            border: 1px solid var(--border);
-        }
-
-        .btn-secondary:hover {
-            background: var(--bg-card);
-            border-color: var(--primary);
-        }
-
-        .btn-danger {
-            background: var(--danger);
-            color: white;
-        }
-
-        .btn-danger:hover {
-            background: #dc2626;
-            transform: translateY(-2px);
-        }
-
-        .modal-actions {
-            display: flex;
-            gap: 1rem;
-            margin-top: 2rem;
-        }
-
-        .modal-actions .btn {
-            flex: 1;
-        }
-
-        .card-details {
-            background: var(--bg-tertiary);
-            border-radius: var(--radius-md);
-            padding: 1.5rem;
-            margin-bottom: 1.5rem;
-        }
-
-        .detail-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 1rem 0;
-            border-bottom: 1px solid var(--border);
-        }
-
-        .detail-row:last-child {
-            border-bottom: none;
-        }
-
-        .detail-label {
-            color: var(--text-secondary);
-            font-size: 0.875rem;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-        }
-
-        .detail-value {
-            font-family: 'JetBrains Mono', monospace;
-            font-weight: 600;
-            font-size: 1.125rem;
-        }
-
-        .btn-logout {
-            position: fixed;
-            bottom: 2rem;
-            right: 2rem;
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            color: var(--text-secondary);
-            padding: 1rem 1.5rem;
-            border-radius: var(--radius-md);
-            font-size: 0.875rem;
-            font-weight: 600;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            transition: var(--transition);
-            z-index: 50;
-        }
-
-        .btn-logout:hover {
-            background: var(--danger);
-            color: white;
-            border-color: var(--danger);
-            transform: translateY(-2px);
-        }
-
-        .toast {
-            position: fixed;
-            bottom: 2rem;
-            left: 50%;
-            transform: translateX(-50%) translateY(150%);
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            color: var(--text-primary);
-            padding: 1rem 2rem;
-            border-radius: var(--radius-md);
-            box-shadow: 0 8px 24px var(--shadow);
-            transition: var(--transition);
-            z-index: 2000;
-            max-width: 400px;
-        }
-
-        .toast.show {
-            transform: translateX(-50%) translateY(0);
-        }
-
-        .toast.success {
-            border-color: var(--success);
-            background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(16, 185, 129, 0.05));
-        }
-
-        .toast.error {
-            border-color: var(--danger);
-            background: linear-gradient(135deg, rgba(239, 68, 68, 0.1), rgba(239, 68, 68, 0.05));
-        }
-
-        .error-message {
-            color: var(--danger);
-            font-size: 0.875rem;
-            margin-top: 0.5rem;
-            display: none;
-        }
-
-        .error-message.show {
-            display: block;
-        }
-
+        /* Responsive */
         @media (max-width: 768px) {
-            .main-content {
-                padding: 1rem;
+            .container {
+                padding: var(--spacing-sm);
             }
-
-            .header-content {
-                padding: 1rem;
+            
+            .search-box {
+                flex-direction: column;
             }
-
-            .balance-amount {
-                font-size: 2rem;
-            }
-
-            .cards-grid {
+            
+            .packages-list {
                 grid-template-columns: 1fr;
             }
-
-            .auth-card {
-                padding: 2rem;
+            
+            .header {
+                flex-direction: column;
+                gap: var(--spacing-sm);
+                text-align: center;
             }
-
-            .modal-content {
-                margin: 1rem;
+            
+            .quick-actions {
+                flex-direction: column;
+                width: 100%;
             }
-
-            .form-row {
-                grid-template-columns: 1fr;
+            
+            .quick-btn {
+                width: 100%;
+                justify-content: center;
             }
-
-            .btn-logout {
-                bottom: 1rem;
-                right: 1rem;
-                padding: 0.875rem 1.25rem;
-            }
-        }
-
-        ::-webkit-scrollbar {
-            width: 8px;
-        }
-
-        ::-webkit-scrollbar-track {
-            background: var(--bg-secondary);
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background: var(--bg-tertiary);
-            border-radius: 4px;
-        }
-
-        ::-webkit-scrollbar-thumb:hover {
-            background: var(--primary);
-        }
-
-        .config-notice {
-            background: linear-gradient(135deg, rgba(245, 158, 11, 0.1), rgba(245, 158, 11, 0.05));
-            border: 1px solid rgba(245, 158, 11, 0.3);
-            border-radius: var(--radius-md);
-            padding: 1rem;
-            margin-bottom: 1rem;
-            font-size: 0.875rem;
-            color: var(--warning);
-        }
-
-        .config-notice strong {
-            display: block;
-            margin-bottom: 0.5rem;
         }
     </style>
 </head>
 <body>
-    <div id="app">
+    <!-- Background Elements -->
+    <div class="background-grid"></div>
+    <div class="gradient-orb orb-1"></div>
+    <div class="gradient-orb orb-2"></div>
+
+    <!-- Main Container -->
+    <div class="container">
+        <!-- Header -->
         <header class="header">
-            <div class="header-content">
-                <div class="logo">
-                    <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
-                        <rect width="32" height="32" rx="8" fill="url(#gradient)"/>
-                        <path d="M10 16L14 20L22 12" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
-                        <defs>
-                            <linearGradient id="gradient" x1="0" y1="0" x2="32" y2="32">
-                                <stop offset="0%" stop-color="#6366f1"/>
-                                <stop offset="100%" stop-color="#8b5cf6"/>
-                            </linearGradient>
-                        </defs>
-                    </svg>
-                    <h1>Wallet</h1>
-                </div>
-                <div class="header-actions">
-                    <button class="btn-icon" id="refreshBtn" title="Aggiorna">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                            <path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                        </svg>
-                    </button>
-                </div>
+            <div class="logo">
+                <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+                    <rect x="4" y="8" width="24" height="16" rx="2" stroke="currentColor" stroke-width="2.5"/>
+                    <path d="M4 14 L16 20 L28 14" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    <circle cx="16" cy="16" r="3" fill="currentColor"/>
+                </svg>
+                <span>TrackPack</span>
+            </div>
+            <div class="user-info">
+                <span id="userEmail" class="user-email"></span>
+                <button id="authBtn" class="btn-secondary">Accedi</button>
             </div>
         </header>
 
-        <main class="main-content">
-            <div id="authSection" class="auth-section">
-                <div class="auth-card">
-                    <div id="configWarning" class="config-notice">
-                        <strong>⚠️ Configurazione Firebase richiesta</strong>
-                        Apri questo file in un editor di testo e cerca "CONFIGURA QUI" per inserire le tue credenziali Firebase.
-                    </div>
-                    <div class="auth-header">
-                        <h2>Benvenuto</h2>
-                        <p>Accedi per gestire le tue carte</p>
-                    </div>
-                    <div class="auth-form">
-                        <input type="email" id="emailInput" placeholder="Email" class="input">
-                        <input type="password" id="passwordInput" placeholder="Password" class="input">
-                        <button id="loginBtn" class="btn btn-primary">Accedi</button>
-                        <button id="signupBtn" class="btn btn-secondary">Registrati</button>
-                    </div>
-                    <div id="authError" class="error-message"></div>
+        <!-- Search Section -->
+        <section class="search-section">
+            <h1 class="main-title">
+                Traccia i tuoi pacchi
+                <span class="title-accent">ovunque siano</span>
+            </h1>
+            <p class="subtitle">Supporto automatico per tutti i principali corrieri mondiali</p>
+            
+            <div class="search-box">
+                <div class="input-wrapper">
+                    <svg class="search-icon" width="20" height="20" viewBox="0 0 20 20" fill="none">
+                        <path d="M9 17A8 8 0 1 0 9 1a8 8 0 0 0 0 16zM18 18l-4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                    </svg>
+                    <input 
+                        type="text" 
+                        id="trackingInput" 
+                        placeholder="Inserisci il numero di tracking..."
+                        autocomplete="off"
+                    />
                 </div>
+                <button id="trackBtn" class="btn-primary">
+                    <span>Traccia</span>
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                        <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </button>
             </div>
 
-            <div id="walletSection" class="wallet-section" style="display: none;">
-                <div class="balance-card">
-                    <div class="balance-label">Saldo totale disponibile</div>
-                    <div class="balance-amount" id="totalBalance">€ 0,00</div>
-                    <div class="balance-footer">
-                        <span id="cardCount">0 carte</span>
-                        <button class="btn-text" id="addCardBtn">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                                <path d="M12 5v14M5 12h14" stroke-width="2.5" stroke-linecap="round"/>
-                            </svg>
-                            Aggiungi carta
-                        </button>
-                    </div>
-                </div>
-
-                <div class="cards-container">
-                    <h2 class="section-title">Le tue carte</h2>
-                    <div id="cardsGrid" class="cards-grid"></div>
-                    <div id="emptyState" class="empty-state">
-                        <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                            <rect x="2" y="6" width="20" height="12" rx="2" stroke-width="1.5"/>
-                            <path d="M2 10h20" stroke-width="1.5"/>
-                        </svg>
-                        <h3>Nessuna carta aggiunta</h3>
-                        <p>Inizia aggiungendo la tua prima carta di pagamento</p>
-                        <button class="btn btn-primary" onclick="openAddCardModal()">Aggiungi carta</button>
-                    </div>
-                </div>
+            <div class="quick-actions">
+                <button class="quick-btn" data-courier="poste">
+                    <span>🇮🇹</span> Poste Italiane
+                </button>
+                <button class="quick-btn" data-courier="dhl">
+                    <span>📦</span> DHL
+                </button>
+                <button class="quick-btn" data-courier="ups">
+                    <span>🚚</span> UPS
+                </button>
+                <button class="quick-btn" data-courier="fedex">
+                    <span>✈️</span> FedEx
+                </button>
             </div>
-        </main>
+        </section>
 
-        <div id="addCardModal" class="modal">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h2>Aggiungi nuova carta</h2>
-                    <button class="btn-close" onclick="closeAddCardModal()">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                            <path d="M18 6L6 18M6 6l12 12" stroke-width="2" stroke-linecap="round"/>
-                        </svg>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <div class="card-preview" id="cardPreview">
-                        <div class="card-chip"></div>
-                        <div class="card-number" id="previewNumber">•••• •••• •••• ••••</div>
-                        <div class="card-info">
-                            <div class="card-holder" id="previewHolder">NOME COGNOME</div>
-                            <div class="card-expiry" id="previewExpiry">MM/AA</div>
-                        </div>
-                    </div>
-                    <form id="addCardForm" class="form">
-                        <div class="form-group">
-                            <label>Numero carta</label>
-                            <input type="text" id="cardNumber" class="input" placeholder="1234 5678 9012 3456" maxlength="19" required>
-                        </div>
-                        <div class="form-group">
-                            <label>Nome titolare</label>
-                            <input type="text" id="cardHolder" class="input" placeholder="NOME COGNOME" required>
-                        </div>
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label>Scadenza</label>
-                                <input type="text" id="cardExpiry" class="input" placeholder="MM/AA" maxlength="5" required>
-                            </div>
-                            <div class="form-group">
-                                <label>CVV</label>
-                                <input type="text" id="cardCVV" class="input" placeholder="123" maxlength="3" required>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label>Saldo (opzionale)</label>
-                            <input type="number" id="cardBalance" class="input" placeholder="0.00" step="0.01" min="0">
-                        </div>
-                        <div class="form-group">
-                            <label>Tipo carta</label>
-                            <select id="cardType" class="input">
-                                <option value="visa">Visa</option>
-                                <option value="mastercard">Mastercard</option>
-                                <option value="amex">American Express</option>
-                                <option value="other">Altra</option>
-                            </select>
-                        </div>
-                        <div class="modal-actions">
-                            <button type="button" class="btn btn-secondary" onclick="closeAddCardModal()">Annulla</button>
-                            <button type="submit" class="btn btn-primary">Aggiungi carta</button>
-                        </div>
-                    </form>
-                </div>
+        <!-- Tracking Results -->
+        <section id="trackingResults" class="tracking-results" style="display: none;">
+            <div class="results-header">
+                <h2>Stato del Pacco</h2>
+                <button id="savePackageBtn" class="btn-save">
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                        <path d="M13 6L6 13 3 10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    Salva
+                </button>
             </div>
-        </div>
+            <div id="trackingContent"></div>
+        </section>
 
-        <div id="cardDetailModal" class="modal">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h2>Dettagli carta</h2>
-                    <button class="btn-close" onclick="closeCardDetailModal()">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                            <path d="M18 6L6 18M6 6l12 12" stroke-width="2" stroke-linecap="round"/>
-                        </svg>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <div class="card-preview large" id="cardDetailPreview">
-                        <div class="card-chip"></div>
-                        <div class="card-number" id="detailNumber">•••• •••• •••• ••••</div>
-                        <div class="card-info">
-                            <div class="card-holder" id="detailHolder">NOME COGNOME</div>
-                            <div class="card-expiry" id="detailExpiry">MM/AA</div>
-                        </div>
-                    </div>
-                    <div class="card-details">
-                        <div class="detail-row">
-                            <span class="detail-label">Saldo</span>
-                            <span class="detail-value" id="detailBalance">€ 0,00</span>
-                        </div>
-                        <div class="detail-row">
-                            <span class="detail-label">Tipo</span>
-                            <span class="detail-value" id="detailType">Visa</span>
-                        </div>
-                    </div>
-                    <div class="modal-actions">
-                        <button class="btn btn-danger" onclick="deleteCurrentCard()">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                                <path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" stroke-width="2" stroke-linecap="round"/>
-                            </svg>
-                            Elimina carta
-                        </button>
-                    </div>
-                </div>
+        <!-- Saved Packages -->
+        <section id="savedPackages" class="saved-packages">
+            <h2 class="section-title">I Tuoi Pacchi</h2>
+            <div id="packagesList" class="packages-list"></div>
+            <div id="emptyState" class="empty-state">
+                <svg width="64" height="64" viewBox="0 0 64 64" fill="none">
+                    <rect x="12" y="20" width="40" height="28" rx="3" stroke="currentColor" stroke-width="3"/>
+                    <path d="M12 32 L32 42 L52 32" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
+                    <circle cx="32" cy="32" r="5" fill="currentColor"/>
+                </svg>
+                <p>Nessun pacco salvato</p>
+                <span>Cerca un pacco e salvalo per tenerlo sotto controllo</span>
             </div>
-        </div>
-
-        <button id="logoutBtn" class="btn-logout" style="display: none;">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-            Esci
-        </button>
+        </section>
     </div>
 
+    <!-- Notification Toast -->
     <div id="toast" class="toast"></div>
 
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
-    
-    <script>
-        // ========================================
-        // CONFIGURA QUI - Firebase Configuration
-        // ========================================
-        // Sostituisci questi valori con la tua configurazione Firebase
-        // Guida: https://console.firebase.google.com/
-        
+    <!-- Auth Modal -->
+    <div id="authModal" class="modal">
+        <div class="modal-content">
+            <h3>Accedi a TrackPack</h3>
+            <p>Salva i tuoi pacchi e ricevi notifiche sugli aggiornamenti</p>
+            <div class="auth-form">
+                <input type="email" id="emailInput" placeholder="Email" />
+                <input type="password" id="passwordInput" placeholder="Password" />
+                <button id="loginBtn" class="btn-primary">Accedi</button>
+                <button id="signupBtn" class="btn-secondary">Registrati</button>
+            </div>
+            <button id="closeModal" class="btn-close">✕</button>
+        </div>
+    </div>
+
+    <script type="module">
+        // Firebase Configuration
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
+        import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, query, where, orderBy, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+
+        // ⚠️ IMPORTANTE: Sostituisci con la tua configurazione Firebase
+        // Vai su https://console.firebase.google.com/ per ottenere le credenziali
         const firebaseConfig = {
-            apiKey: "AIzaSyCf2XwEwcKnpldMjD1D2IX7Skx5Vauqhns",
-            authDomain: "bang-6d35a.firebaseapp.com",
-            projectId: "bang-6d35a",
-            storageBucket: "bang-6d35a.firebasestorage.app",
-            messagingSenderId: "515737960541",
-            appId: "1:515737960541:web:551c91c09d5cfe63c04db4"
+            apiKey: "AIzaSyBmaySa9SULGq-G7nLq0IvkL4OqeZPmfNs",
+            authDomain: "trackpack-75472.firebaseapp.com",
+            projectId: "trackpack-75472",
+            storageBucket: "trackpack-75472.firebasestorage.app",
+            messagingSenderId: "89355873642",
+            appId: "1:89355873642:web:7a03f3879dbdee1ec90913"
         };
 
-        try {
-            firebase.initializeApp(firebaseConfig);
-            if (firebaseConfig.apiKey !== "YOUR_API_KEY") {
-                document.getElementById('configWarning').style.display = 'none';
-            }
-        } catch (error) {
-            console.error('Firebase initialization error:', error);
-            showToast('Errore configurazione Firebase', 'error');
-        }
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
 
-        let currentUser = null;
-        let currentCardId = null;
-        const cards = [];
-
-        const authSection = document.getElementById('authSection');
-        const walletSection = document.getElementById('walletSection');
-        const emailInput = document.getElementById('emailInput');
-        const passwordInput = document.getElementById('passwordInput');
+        // DOM Elements
+        const trackingInput = document.getElementById('trackingInput');
+        const trackBtn = document.getElementById('trackBtn');
+        const trackingResults = document.getElementById('trackingResults');
+        const trackingContent = document.getElementById('trackingContent');
+        const savePackageBtn = document.getElementById('savePackageBtn');
+        const packagesList = document.getElementById('packagesList');
+        const emptyState = document.getElementById('emptyState');
+        const authBtn = document.getElementById('authBtn');
+        const authModal = document.getElementById('authModal');
+        const closeModal = document.getElementById('closeModal');
         const loginBtn = document.getElementById('loginBtn');
         const signupBtn = document.getElementById('signupBtn');
-        const logoutBtn = document.getElementById('logoutBtn');
-        const authError = document.getElementById('authError');
-        const addCardBtn = document.getElementById('addCardBtn');
-        const addCardModal = document.getElementById('addCardModal');
-        const cardDetailModal = document.getElementById('cardDetailModal');
-        const cardsGrid = document.getElementById('cardsGrid');
-        const emptyState = document.getElementById('emptyState');
-        const totalBalance = document.getElementById('totalBalance');
-        const cardCount = document.getElementById('cardCount');
+        const emailInput = document.getElementById('emailInput');
+        const passwordInput = document.getElementById('passwordInput');
+        const userEmail = document.getElementById('userEmail');
         const toast = document.getElementById('toast');
+        const quickBtns = document.querySelectorAll('.quick-btn');
 
-        document.addEventListener('DOMContentLoaded', () => {
-            initAuthListeners();
-            initFormListeners();
-            initCardFormListeners();
-            
-            firebase.auth().onAuthStateChanged((user) => {
-                if (user) {
-                    currentUser = user;
-                    showWalletSection();
-                    loadUserCards();
-                } else {
-                    currentUser = null;
-                    showAuthSection();
-                }
+        // Current tracking data
+        let currentTrackingData = null;
+        let currentUser = null;
+
+        // Auth State Observer
+        onAuthStateChanged(auth, (user) => {
+            currentUser = user;
+            if (user) {
+                userEmail.textContent = user.email;
+                authBtn.textContent = 'Esci';
+                authBtn.onclick = handleSignOut;
+                loadSavedPackages();
+            } else {
+                userEmail.textContent = '';
+                authBtn.textContent = 'Accedi';
+                authBtn.onclick = () => authModal.classList.add('active');
+                packagesList.innerHTML = '';
+                emptyState.style.display = 'block';
+            }
+        });
+
+        // Event Listeners
+        trackBtn.addEventListener('click', handleTrack);
+        trackingInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') handleTrack();
+        });
+
+        savePackageBtn.addEventListener('click', handleSavePackage);
+        closeModal.addEventListener('click', () => authModal.classList.remove('active'));
+        loginBtn.addEventListener('click', handleLogin);
+        signupBtn.addEventListener('click', handleSignup);
+
+        quickBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const courier = btn.dataset.courier;
+                showToast(`Seleziona ${btn.textContent.trim()} e inserisci il numero di tracking`);
             });
         });
 
-        function initAuthListeners() {
-            loginBtn.addEventListener('click', handleLogin);
-            signupBtn.addEventListener('click', handleSignup);
-            logoutBtn.addEventListener('click', handleLogout);
-            passwordInput.addEventListener('keypress', (e) => {
-                if (e.key === 'Enter') handleLogin();
-            });
-        }
-
+        // Authentication Functions
         async function handleLogin() {
-            const email = emailInput.value.trim();
+            const email = emailInput.value;
             const password = passwordInput.value;
             
-            if (!email || !password) {
-                showError('Inserisci email e password');
-                return;
-            }
-            
             try {
-                await firebase.auth().signInWithEmailAndPassword(email, password);
-                clearAuthInputs();
-                showToast('Accesso effettuato!', 'success');
+                await signInWithEmailAndPassword(auth, email, password);
+                authModal.classList.remove('active');
+                showToast('Accesso effettuato con successo!');
+                emailInput.value = '';
+                passwordInput.value = '';
             } catch (error) {
-                showError(getErrorMessage(error.code));
+                showToast('Errore: ' + error.message, true);
             }
         }
 
         async function handleSignup() {
-            const email = emailInput.value.trim();
+            const email = emailInput.value;
             const password = passwordInput.value;
             
-            if (!email || !password) {
-                showError('Inserisci email e password');
-                return;
-            }
-            
             if (password.length < 6) {
-                showError('La password deve essere di almeno 6 caratteri');
+                showToast('La password deve essere almeno 6 caratteri', true);
                 return;
             }
             
             try {
-                await firebase.auth().createUserWithEmailAndPassword(email, password);
-                clearAuthInputs();
-                showToast('Account creato con successo!', 'success');
+                await createUserWithEmailAndPassword(auth, email, password);
+                authModal.classList.remove('active');
+                showToast('Account creato con successo!');
+                emailInput.value = '';
+                passwordInput.value = '';
             } catch (error) {
-                showError(getErrorMessage(error.code));
+                showToast('Errore: ' + error.message, true);
             }
         }
 
-        async function handleLogout() {
+        async function handleSignOut() {
             try {
-                await firebase.auth().signOut();
-                cards.length = 0;
-                showToast('Disconnesso', 'success');
+                await signOut(auth);
+                showToast('Disconnesso con successo');
             } catch (error) {
-                showToast('Errore durante la disconnessione', 'error');
+                showToast('Errore durante la disconnessione', true);
             }
         }
 
-        function clearAuthInputs() {
-            emailInput.value = '';
-            passwordInput.value = '';
-            authError.textContent = '';
-            authError.classList.remove('show');
-        }
-
-        function showError(message) {
-            authError.textContent = message;
-            authError.classList.add('show');
-        }
-
-        function getErrorMessage(code) {
-            const messages = {
-                'auth/invalid-email': 'Email non valida',
-                'auth/user-disabled': 'Account disabilitato',
-                'auth/user-not-found': 'Utente non trovato',
-                'auth/wrong-password': 'Password errata',
-                'auth/email-already-in-use': 'Email già registrata',
-                'auth/weak-password': 'Password troppo debole',
-                'auth/network-request-failed': 'Errore di connessione'
-            };
-            return messages[code] || 'Si è verificato un errore';
-        }
-
-        function showAuthSection() {
-            authSection.style.display = 'flex';
-            walletSection.style.display = 'none';
-            logoutBtn.style.display = 'none';
-        }
-
-        function showWalletSection() {
-            authSection.style.display = 'none';
-            walletSection.style.display = 'block';
-            logoutBtn.style.display = 'flex';
-        }
-
-        async function loadUserCards() {
-            if (!currentUser) return;
+        // Tracking Functions
+        async function handleTrack() {
+            const trackingNumber = trackingInput.value.trim();
             
-            try {
-                const snapshot = await firebase.firestore()
-                    .collection('users')
-                    .doc(currentUser.uid)
-                    .collection('cards')
-                    .orderBy('createdAt', 'desc')
-                    .get();
+            if (!trackingNumber) {
+                showToast('Inserisci un numero di tracking', true);
+                return;
+            }
+            
+            trackingResults.style.display = 'block';
+            trackingContent.innerHTML = '<div class="loading"><div class="spinner"></div><p>Ricerca in corso...</p></div>';
+            
+            // Genera dati mock per la demo
+            // Per tracking reale, sostituisci con chiamata API a TrackingMore o simili
+            currentTrackingData = generateMockTrackingData(trackingNumber);
+            displayTrackingResults(currentTrackingData);
+        }
+
+        function generateMockTrackingData(trackingNumber) {
+            const statuses = ['in_transit', 'delivered', 'pending'];
+            const carriers = ['DHL', 'UPS', 'FedEx', 'Poste Italiane', 'BRT'];
+            const locations = [
+                'Milano, Italia',
+                'Roma, Italia',
+                'Bologna, Italia',
+                'Firenze, Italia',
+                'Hub Nazionale, Italia'
+            ];
+            
+            const randomStatus = statuses[Math.floor(Math.random() * statuses.length)];
+            const randomCarrier = carriers[Math.floor(Math.random() * carriers.length)];
+            
+            const events = [];
+            const eventCount = Math.floor(Math.random() * 3) + 2;
+            
+            for (let i = 0; i < eventCount; i++) {
+                const date = new Date();
+                date.setHours(date.getHours() - (i * 8));
                 
-                cards.length = 0;
-                snapshot.forEach(doc => {
-                    cards.push({ id: doc.id, ...doc.data() });
+                events.push({
+                    status: i === 0 ? (randomStatus === 'delivered' ? 'Consegnato' : 'In transito') : 
+                            i === eventCount - 1 ? 'Preso in carico' : 'In elaborazione',
+                    location: locations[Math.floor(Math.random() * locations.length)],
+                    date: date.toISOString()
+                });
+            }
+            
+            return {
+                trackingNumber,
+                carrier: randomCarrier,
+                status: randomStatus,
+                events,
+                lastUpdate: new Date().toISOString()
+            };
+        }
+
+        function displayTrackingResults(data) {
+            const statusClass = data.status === 'delivered' ? 'status-delivered' : 
+                               data.status === 'in_transit' ? 'status-in-transit' : 'status-pending';
+            const statusText = data.status === 'delivered' ? 'Consegnato' : 
+                              data.status === 'in_transit' ? 'In Transito' : 'In Elaborazione';
+            
+            let html = `
+                <div class="package-header">
+                    <div class="package-info">
+                        <h3>${data.carrier}</h3>
+                        <div class="tracking-number">${data.trackingNumber}</div>
+                    </div>
+                    <span class="status-badge ${statusClass}">${statusText}</span>
+                </div>
+            `;
+            
+            if (data.events && data.events.length > 0) {
+                html += '<div class="timeline">';
+                
+                data.events.forEach((event, index) => {
+                    const date = new Date(event.date);
+                    const formattedDate = date.toLocaleDateString('it-IT', {
+                        day: '2-digit',
+                        month: 'long',
+                        year: 'numeric'
+                    });
+                    const formattedTime = date.toLocaleTimeString('it-IT', {
+                        hour: '2-digit',
+                        minute: '2-digit'
+                    });
+                    
+                    html += `
+                        <div class="timeline-item">
+                            <div class="timeline-dot"></div>
+                            <div class="timeline-content">
+                                <div class="timeline-title">${event.status}</div>
+                                <div class="timeline-location">${event.location}</div>
+                                <div class="timeline-time">${formattedDate} alle ${formattedTime}</div>
+                            </div>
+                        </div>
+                    `;
                 });
                 
-                renderCards();
-                updateBalance();
+                html += '</div>';
+            }
+            
+            trackingContent.innerHTML = html;
+        }
+
+        // Save Package
+        async function handleSavePackage() {
+            if (!currentUser) {
+                showToast('Effettua l\'accesso per salvare i pacchi', true);
+                authModal.classList.add('active');
+                return;
+            }
+            
+            if (!currentTrackingData) {
+                showToast('Nessun pacco da salvare', true);
+                return;
+            }
+            
+            try {
+                await addDoc(collection(db, 'packages'), {
+                    userId: currentUser.uid,
+                    trackingNumber: currentTrackingData.trackingNumber,
+                    carrier: currentTrackingData.carrier,
+                    status: currentTrackingData.status,
+                    lastUpdate: serverTimestamp(),
+                    createdAt: serverTimestamp()
+                });
+                
+                showToast('Pacco salvato con successo!');
+                loadSavedPackages();
             } catch (error) {
-                showToast('Errore nel caricamento delle carte', 'error');
+                console.error('Error saving package:', error);
+                showToast('Errore nel salvare il pacco', true);
             }
         }
 
-        function renderCards() {
-            cardsGrid.innerHTML = '';
-            
-            if (cards.length === 0) {
+        // Load Saved Packages
+        async function loadSavedPackages() {
+            if (!currentUser) {
+                packagesList.innerHTML = '';
                 emptyState.style.display = 'block';
                 return;
             }
             
-            emptyState.style.display = 'none';
-            
-            cards.forEach(card => {
-                const cardElement = createCardElement(card);
-                cardsGrid.appendChild(cardElement);
-            });
+            try {
+                const q = query(
+                    collection(db, 'packages'),
+                    where('userId', '==', currentUser.uid),
+                    orderBy('createdAt', 'desc')
+                );
+                
+                const querySnapshot = await getDocs(q);
+                
+                if (querySnapshot.empty) {
+                    packagesList.innerHTML = '';
+                    emptyState.style.display = 'block';
+                    return;
+                }
+                
+                emptyState.style.display = 'none';
+                packagesList.innerHTML = '';
+                
+                querySnapshot.forEach((docSnapshot, index) => {
+                    const pkg = docSnapshot.data();
+                    const card = createPackageCard(pkg, docSnapshot.id, index);
+                    packagesList.appendChild(card);
+                });
+                
+            } catch (error) {
+                console.error('Error loading packages:', error);
+                showToast('Errore nel caricare i pacchi', true);
+            }
         }
 
-        function createCardElement(card) {
-            const div = document.createElement('div');
-            div.className = 'card-item';
-            div.onclick = () => showCardDetail(card.id);
+        function createPackageCard(pkg, docId, index) {
+            const card = document.createElement('div');
+            card.className = 'package-card';
+            card.style.animationDelay = `${index * 0.1}s`;
             
-            const maskedNumber = maskCardNumber(card.number);
-            const balance = formatCurrency(card.balance || 0);
+            const statusClass = pkg.status === 'delivered' ? 'status-delivered' : 
+                               pkg.status === 'in_transit' ? 'status-in-transit' : 'status-pending';
+            const statusText = pkg.status === 'delivered' ? 'Consegnato' : 
+                              pkg.status === 'in_transit' ? 'In Transito' : 'In Elaborazione';
             
-            div.innerHTML = `
-                <div class="card-mini ${card.type}">
-                    <div class="card-chip-mini"></div>
-                    <div class="card-number-mini">${maskedNumber}</div>
-                    <div class="card-info-mini">
-                        <div class="card-holder-mini">${card.holder}</div>
-                        <div class="card-expiry-mini">${card.expiry}</div>
+            card.innerHTML = `
+                <div class="package-card-header">
+                    <div>
+                        <h4>${pkg.carrier}</h4>
+                        <div class="tracking-number">${pkg.trackingNumber}</div>
                     </div>
+                    <button class="delete-btn" data-id="${docId}">×</button>
                 </div>
-                <div class="card-meta">
-                    <span>${getCardTypeName(card.type)}</span>
-                    <span class="card-balance">${balance}</span>
+                <div class="package-status">
+                    <span class="status-badge ${statusClass}">${statusText}</span>
                 </div>
             `;
             
-            return div;
-        }
-
-        function maskCardNumber(number) {
-            const cleaned = number.replace(/\s/g, '');
-            const lastFour = cleaned.slice(-4);
-            return `•••• •••• •••• ${lastFour}`;
-        }
-
-        function formatCurrency(amount) {
-            return new Intl.NumberFormat('it-IT', {
-                style: 'currency',
-                currency: 'EUR'
-            }).format(amount);
-        }
-
-        function getCardTypeName(type) {
-            const names = {
-                'visa': 'Visa',
-                'mastercard': 'Mastercard',
-                'amex': 'American Express',
-                'other': 'Altra'
-            };
-            return names[type] || 'Carta';
-        }
-
-        function updateBalance() {
-            const total = cards.reduce((sum, card) => sum + (card.balance || 0), 0);
-            totalBalance.textContent = formatCurrency(total);
-            cardCount.textContent = `${cards.length} ${cards.length === 1 ? 'carta' : 'carte'}`;
-        }
-
-        function initFormListeners() {
-            addCardBtn.addEventListener('click', openAddCardModal);
-            document.getElementById('refreshBtn').addEventListener('click', loadUserCards);
-        }
-
-        function openAddCardModal() {
-            addCardModal.classList.add('active');
-            document.body.style.overflow = 'hidden';
-        }
-
-        function closeAddCardModal() {
-            addCardModal.classList.remove('active');
-            document.body.style.overflow = '';
-            document.getElementById('addCardForm').reset();
-            updateCardPreview();
-        }
-
-        function showCardDetail(cardId) {
-            currentCardId = cardId;
-            const card = cards.find(c => c.id === cardId);
-            if (!card) return;
+            card.querySelector('.delete-btn').addEventListener('click', async (e) => {
+                e.stopPropagation();
+                await deletePackage(docId);
+            });
             
-            const maskedNumber = maskCardNumber(card.number);
+            card.addEventListener('click', () => {
+                trackingInput.value = pkg.trackingNumber;
+                handleTrack();
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            });
             
-            document.getElementById('detailNumber').textContent = maskedNumber;
-            document.getElementById('detailHolder').textContent = card.holder;
-            document.getElementById('detailExpiry').textContent = card.expiry;
-            document.getElementById('detailBalance').textContent = formatCurrency(card.balance || 0);
-            document.getElementById('detailType').textContent = getCardTypeName(card.type);
-            
-            const preview = document.getElementById('cardDetailPreview');
-            preview.className = `card-preview large ${card.type}`;
-            
-            cardDetailModal.classList.add('active');
-            document.body.style.overflow = 'hidden';
+            return card;
         }
 
-        function closeCardDetailModal() {
-            cardDetailModal.classList.remove('active');
-            document.body.style.overflow = '';
-            currentCardId = null;
-        }
-
-        async function deleteCurrentCard() {
-            if (!currentCardId || !currentUser) return;
-            
-            if (!confirm('Sei sicuro di voler eliminare questa carta?')) return;
-            
+        async function deletePackage(docId) {
             try {
-                await firebase.firestore()
-                    .collection('users')
-                    .doc(currentUser.uid)
-                    .collection('cards')
-                    .doc(currentCardId)
-                    .delete();
-                
-                closeCardDetailModal();
-                await loadUserCards();
-                showToast('Carta eliminata', 'success');
+                await deleteDoc(doc(db, 'packages', docId));
+                showToast('Pacco eliminato');
+                loadSavedPackages();
             } catch (error) {
-                showToast('Errore durante l\'eliminazione', 'error');
+                console.error('Error deleting package:', error);
+                showToast('Errore nell\'eliminare il pacco', true);
             }
         }
 
-        function initCardFormListeners() {
-            const form = document.getElementById('addCardForm');
-            const cardNumber = document.getElementById('cardNumber');
-            const cardHolder = document.getElementById('cardHolder');
-            const cardExpiry = document.getElementById('cardExpiry');
-            const cardType = document.getElementById('cardType');
-            
-            cardNumber.addEventListener('input', (e) => {
-                let value = e.target.value.replace(/\s/g, '');
-                value = value.replace(/\D/g, '');
-                value = value.substring(0, 16);
-                
-                const formatted = value.match(/.{1,4}/g)?.join(' ') || value;
-                e.target.value = formatted;
-                
-                updateCardPreview();
-            });
-            
-            cardHolder.addEventListener('input', (e) => {
-                e.target.value = e.target.value.toUpperCase();
-                updateCardPreview();
-            });
-            
-            cardExpiry.addEventListener('input', (e) => {
-                let value = e.target.value.replace(/\D/g, '');
-                if (value.length >= 2) {
-                    value = value.substring(0, 2) + '/' + value.substring(2, 4);
-                }
-                e.target.value = value;
-                updateCardPreview();
-            });
-            
-            cardType.addEventListener('change', updateCardPreview);
-            
-            form.addEventListener('submit', handleAddCard);
-        }
-
-        function updateCardPreview() {
-            const number = document.getElementById('cardNumber').value || '•••• •••• •••• ••••';
-            const holder = document.getElementById('cardHolder').value || 'NOME COGNOME';
-            const expiry = document.getElementById('cardExpiry').value || 'MM/AA';
-            const type = document.getElementById('cardType').value;
-            
-            document.getElementById('previewNumber').textContent = number;
-            document.getElementById('previewHolder').textContent = holder;
-            document.getElementById('previewExpiry').textContent = expiry;
-            
-            const preview = document.getElementById('cardPreview');
-            preview.className = `card-preview ${type}`;
-        }
-
-        async function handleAddCard(e) {
-            e.preventDefault();
-            
-            if (!currentUser) return;
-            
-            const number = document.getElementById('cardNumber').value.replace(/\s/g, '');
-            const holder = document.getElementById('cardHolder').value;
-            const expiry = document.getElementById('cardExpiry').value;
-            const cvv = document.getElementById('cardCVV').value;
-            const balance = parseFloat(document.getElementById('cardBalance').value) || 0;
-            const type = document.getElementById('cardType').value;
-            
-            if (number.length !== 16) {
-                showToast('Numero carta non valido', 'error');
-                return;
-            }
-            
-            if (!holder || holder.length < 3) {
-                showToast('Nome titolare non valido', 'error');
-                return;
-            }
-            
-            if (!/^\d{2}\/\d{2}$/.test(expiry)) {
-                showToast('Data scadenza non valida', 'error');
-                return;
-            }
-            
-            if (cvv.length !== 3) {
-                showToast('CVV non valido', 'error');
-                return;
-            }
-            
-            try {
-                const cardData = {
-                    number: number,
-                    holder: holder,
-                    expiry: expiry,
-                    balance: balance,
-                    type: type,
-                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
-                };
-                
-                await firebase.firestore()
-                    .collection('users')
-                    .doc(currentUser.uid)
-                    .collection('cards')
-                    .add(cardData);
-                
-                closeAddCardModal();
-                await loadUserCards();
-                showToast('Carta aggiunta con successo!', 'success');
-            } catch (error) {
-                showToast('Errore durante l\'aggiunta della carta', 'error');
-            }
-        }
-
-        function showToast(message, type = 'success') {
+        // Toast Notification
+        function showToast(message, isError = false) {
             toast.textContent = message;
-            toast.className = `toast ${type}`;
+            toast.style.borderColor = isError ? 'var(--error)' : 'var(--primary)';
             toast.classList.add('show');
             
             setTimeout(() => {
                 toast.classList.remove('show');
             }, 3000);
         }
+
+        // Initialize
+        console.log('🚀 TrackPack inizializzato!');
+        console.log('📝 Sostituisci la configurazione Firebase per salvare i pacchi');
     </script>
 </body>
 </html>

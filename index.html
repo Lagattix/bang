@@ -3,599 +3,225 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bang - Wallet Digitale</title>
-    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-    <script src="https://cdn.tailwindcss.com"></script>
-    
+    <title>Digital Wallet</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div id="app">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <div class="logo">
+                    <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+                        <rect width="32" height="32" rx="8" fill="url(#gradient)"/>
+                        <path d="M10 16L14 20L22 12" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                        <defs>
+                            <linearGradient id="gradient" x1="0" y1="0" x2="32" y2="32">
+                                <stop offset="0%" stop-color="#6366f1"/>
+                                <stop offset="100%" stop-color="#8b5cf6"/>
+                            </linearGradient>
+                        </defs>
+                    </svg>
+                    <h1>Wallet</h1>
+                </div>
+                <div class="header-actions">
+                    <button class="btn-icon" id="refreshBtn" title="Aggiorna">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </button>
+                    <button class="btn-icon" id="userBtn" title="Account">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <circle cx="12" cy="8" r="4" stroke-width="2"/>
+                            <path d="M6 21v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2" stroke-width="2" stroke-linecap="round"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Auth Section (shown when not logged in) -->
+            <div id="authSection" class="auth-section">
+                <div class="auth-card">
+                    <div class="auth-header">
+                        <h2>Benvenuto</h2>
+                        <p>Accedi per gestire le tue carte</p>
+                    </div>
+                    <div class="auth-form">
+                        <input type="email" id="emailInput" placeholder="Email" class="input">
+                        <input type="password" id="passwordInput" placeholder="Password" class="input">
+                        <button id="loginBtn" class="btn btn-primary">Accedi</button>
+                        <button id="signupBtn" class="btn btn-secondary">Registrati</button>
+                    </div>
+                    <div id="authError" class="error-message"></div>
+                </div>
+            </div>
+
+            <!-- Wallet Section (shown when logged in) -->
+            <div id="walletSection" class="wallet-section" style="display: none;">
+                <!-- Balance Summary -->
+                <div class="balance-card">
+                    <div class="balance-label">Saldo totale disponibile</div>
+                    <div class="balance-amount" id="totalBalance">€ 0,00</div>
+                    <div class="balance-footer">
+                        <span id="cardCount">0 carte</span>
+                        <button class="btn-text" id="addCardBtn">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                <path d="M12 5v14M5 12h14" stroke-width="2.5" stroke-linecap="round"/>
+                            </svg>
+                            Aggiungi carta
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Cards Grid -->
+                <div class="cards-container">
+                    <h2 class="section-title">Le tue carte</h2>
+                    <div id="cardsGrid" class="cards-grid">
+                        <!-- Cards will be inserted here -->
+                    </div>
+                    <div id="emptyState" class="empty-state">
+                        <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <rect x="2" y="6" width="20" height="12" rx="2" stroke-width="1.5"/>
+                            <path d="M2 10h20" stroke-width="1.5"/>
+                        </svg>
+                        <h3>Nessuna carta aggiunta</h3>
+                        <p>Inizia aggiungendo la tua prima carta di pagamento</p>
+                        <button class="btn btn-primary" onclick="openAddCardModal()">
+                            Aggiungi carta
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Add Card Modal -->
+        <div id="addCardModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>Aggiungi nuova carta</h2>
+                    <button class="btn-close" onclick="closeAddCardModal()">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <path d="M18 6L6 18M6 6l12 12" stroke-width="2" stroke-linecap="round"/>
+                        </svg>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="card-preview" id="cardPreview">
+                        <div class="card-chip"></div>
+                        <div class="card-number" id="previewNumber">•••• •••• •••• ••••</div>
+                        <div class="card-info">
+                            <div class="card-holder" id="previewHolder">NOME COGNOME</div>
+                            <div class="card-expiry" id="previewExpiry">MM/AA</div>
+                        </div>
+                    </div>
+                    <form id="addCardForm" class="form">
+                        <div class="form-group">
+                            <label>Numero carta</label>
+                            <input type="text" id="cardNumber" class="input" placeholder="1234 5678 9012 3456" maxlength="19" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Nome titolare</label>
+                            <input type="text" id="cardHolder" class="input" placeholder="NOME COGNOME" required>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Scadenza</label>
+                                <input type="text" id="cardExpiry" class="input" placeholder="MM/AA" maxlength="5" required>
+                            </div>
+                            <div class="form-group">
+                                <label>CVV</label>
+                                <input type="text" id="cardCVV" class="input" placeholder="123" maxlength="3" required>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Saldo (opzionale)</label>
+                            <input type="number" id="cardBalance" class="input" placeholder="0.00" step="0.01" min="0">
+                        </div>
+                        <div class="form-group">
+                            <label>Tipo carta</label>
+                            <select id="cardType" class="input">
+                                <option value="visa">Visa</option>
+                                <option value="mastercard">Mastercard</option>
+                                <option value="amex">American Express</option>
+                                <option value="other">Altra</option>
+                            </select>
+                        </div>
+                        <div class="modal-actions">
+                            <button type="button" class="btn btn-secondary" onclick="closeAddCardModal()">Annulla</button>
+                            <button type="submit" class="btn btn-primary">Aggiungi carta</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Card Detail Modal -->
+        <div id="cardDetailModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>Dettagli carta</h2>
+                    <button class="btn-close" onclick="closeCardDetailModal()">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <path d="M18 6L6 18M6 6l12 12" stroke-width="2" stroke-linecap="round"/>
+                        </svg>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="card-preview large" id="cardDetailPreview">
+                        <div class="card-chip"></div>
+                        <div class="card-number" id="detailNumber">•••• •••• •••• ••••</div>
+                        <div class="card-info">
+                            <div class="card-holder" id="detailHolder">NOME COGNOME</div>
+                            <div class="card-expiry" id="detailExpiry">MM/AA</div>
+                        </div>
+                    </div>
+                    <div class="card-details">
+                        <div class="detail-row">
+                            <span class="detail-label">Saldo</span>
+                            <span class="detail-value" id="detailBalance">€ 0,00</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">Tipo</span>
+                            <span class="detail-value" id="detailType">Visa</span>
+                        </div>
+                    </div>
+                    <div class="modal-actions">
+                        <button class="btn btn-danger" onclick="deleteCurrentCard()">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                <path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" stroke-width="2" stroke-linecap="round"/>
+                            </svg>
+                            Elimina carta
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Logout Button (shown when logged in) -->
+        <button id="logoutBtn" class="btn-logout" style="display: none;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            Esci
+        </button>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="toast"></div>
+
     <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
     
-    <style>
-        body {
-            margin: 0;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
-        }
-        .animate-spin {
-            animation: spin 1s linear infinite;
-        }
-        @keyframes spin {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
-        }
-    </style>
-</head>
-<body>
-    <div id="root"></div>
-
-    <script type="text/babel">
-        const { useState, useEffect } = React;
-
-        // Icone SVG
-        const CreditCard = () => (
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <rect width="20" height="14" x="2" y="5" rx="2"/>
-                <line x1="2" x2="22" y1="10" y2="10"/>
-            </svg>
-        );
-
-        const Send = () => (
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="m22 2-7 20-4-9-9-4Z"/>
-                <path d="M22 2 11 13"/>
-            </svg>
-        );
-
-        const LogOut = () => (
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
-                <polyline points="16 17 21 12 16 7"/>
-                <line x1="21" x2="9" y1="12" y2="12"/>
-            </svg>
-        );
-
-        const Plus = () => (
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M5 12h14"/>
-                <path d="M12 5v14"/>
-            </svg>
-        );
-
-        const ArrowUpRight = () => (
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M7 17 17 7"/>
-                <path d="M7 7h10v10"/>
-            </svg>
-        );
-
-        const ArrowDownLeft = () => (
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M17 7 7 17"/>
-                <path d="M17 17H7V7"/>
-            </svg>
-        );
-
-        const Home = () => (
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
-                <polyline points="9 22 9 12 15 12 15 22"/>
-            </svg>
-        );
-
-        const History = () => (
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
-                <path d="M3 3v5h5"/>
-                <path d="M12 7v5l4 2"/>
-            </svg>
-        );
-
-        const Loader = () => (
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="animate-spin">
-                <path d="M21 12a9 9 0 1 1-6.219-8.56"/>
-            </svg>
-        );
-
-        const BangApp = () => {
-            const [currentUser, setCurrentUser] = useState(null);
-            const [userData, setUserData] = useState(null);
-            const [activeTab, setActiveTab] = useState('home');
-            const [showTransferModal, setShowTransferModal] = useState(false);
-            const [transferAmount, setTransferAmount] = useState('');
-            const [recipientEmail, setRecipientEmail] = useState('');
-            const [loading, setLoading] = useState(false);
-            const [initialLoading, setInitialLoading] = useState(true);
-            const [authMode, setAuthMode] = useState('login');
-            const [email, setEmail] = useState('');
-            const [password, setPassword] = useState('');
-            const [name, setName] = useState('');
-            const [transactions, setTransactions] = useState([]);
-
-            useEffect(() => {
-                // Inizializza Firebase
-                const firebaseConfig = {
-                    apiKey: "AIzaSyADTlqW9GSmEcz4lvdVs8oTAunCtPQTfxA",
-                    authDomain: "bang-d64bf.firebaseapp.com",
-                    databaseURL: "https://bang-d64bf-default-rtdb.firebaseio.com",
-                    projectId: "bang-d64bf",
-                    storageBucket: "bang-d64bf.firebasestorage.app",
-                    messagingSenderId: "327241018824",
-                    appId: "1:327241018824:web:304c5e64494f0abe2a24fd"
-                };
-
-                if (!firebase.apps.length) {
-                    firebase.initializeApp(firebaseConfig);
-                }
-
-                const auth = firebase.auth();
-                const db = firebase.database();
-
-                // Monitora autenticazione
-                auth.onAuthStateChanged((user) => {
-                    if (user) {
-                        setCurrentUser(user);
-                        
-                        // Carica dati utente
-                        const userRef = db.ref('users/' + user.uid);
-                        userRef.on('value', (snapshot) => {
-                            const data = snapshot.val();
-                            if (data) {
-                                setUserData(data);
-                            }
-                            setInitialLoading(false);
-                        });
-
-                        // Carica transazioni
-                        const transactionsRef = db.ref('transactions');
-                        transactionsRef.on('value', (snapshot) => {
-                            const data = snapshot.val();
-                            if (data) {
-                                const txArray = Object.entries(data).map(([id, tx]) => ({
-                                    id,
-                                    ...tx,
-                                    type: tx.from === user.uid ? 'sent' : 'received'
-                                }))
-                                .filter(tx => tx.from === user.uid || tx.to === user.uid)
-                                .sort((a, b) => b.timestamp - a.timestamp);
-                                
-                                setTransactions(txArray);
-                            } else {
-                                setTransactions([]);
-                            }
-                        });
-                    } else {
-                        setCurrentUser(null);
-                        setUserData(null);
-                        setInitialLoading(false);
-                    }
-                });
-            }, []);
-
-            const handleAuth = async () => {
-                if (!email || !password) {
-                    alert('Inserisci email e password');
-                    return;
-                }
-
-                setLoading(true);
-                const auth = firebase.auth();
-                const db = firebase.database();
-
-                try {
-                    if (authMode === 'login') {
-                        await auth.signInWithEmailAndPassword(email, password);
-                    } else {
-                        if (!name) {
-                            alert('Inserisci il tuo nome');
-                            setLoading(false);
-                            return;
-                        }
-
-                        const userCredential = await auth.createUserWithEmailAndPassword(email, password);
-                        const user = userCredential.user;
-                        
-                        const newUserData = {
-                            uid: user.uid,
-                            email: user.email,
-                            name: name,
-                            balance: 0,
-                            iban: `IT60X${Math.random().toString().slice(2, 25)}`,
-                            createdAt: new Date().toISOString()
-                        };
-                        
-                        await db.ref('users/' + user.uid).set(newUserData);
-                        alert('Account creato con successo!');
-                    }
-                } catch (error) {
-                    console.error('Errore auth:', error);
-                    let errorMessage = 'Errore durante l\'autenticazione';
-                    
-                    if (error.code === 'auth/email-already-in-use') {
-                        errorMessage = 'Email già registrata';
-                    } else if (error.code === 'auth/weak-password') {
-                        errorMessage = 'Password troppo debole (minimo 6 caratteri)';
-                    } else if (error.code === 'auth/invalid-email') {
-                        errorMessage = 'Email non valida';
-                    } else if (error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password') {
-                        errorMessage = 'Email o password errate';
-                    } else if (error.code === 'auth/invalid-credential') {
-                        errorMessage = 'Credenziali non valide';
-                    }
-                    
-                    alert(errorMessage);
-                }
-                
-                setLoading(false);
-                setEmail('');
-                setPassword('');
-                setName('');
-            };
-
-            const handleTransfer = async () => {
-                const amount = parseFloat(transferAmount);
-                if (!amount || amount <= 0) {
-                    alert('Inserisci un importo valido');
-                    return;
-                }
-                
-                if (amount > userData.balance) {
-                    alert('Saldo insufficiente');
-                    return;
-                }
-
-                if (!recipientEmail || recipientEmail === userData.email) {
-                    alert('Email destinatario non valida');
-                    return;
-                }
-
-                setLoading(true);
-                const db = firebase.database();
-
-                try {
-                    // Cerca destinatario
-                    const usersSnapshot = await db.ref('users').once('value');
-                    const users = usersSnapshot.val();
-                    
-                    let recipientUid = null;
-                    let recipientName = null;
-                    
-                    for (const uid in users) {
-                        if (users[uid].email === recipientEmail) {
-                            recipientUid = uid;
-                            recipientName = users[uid].name;
-                            break;
-                        }
-                    }
-
-                    if (!recipientUid) {
-                        alert('Destinatario non trovato');
-                        setLoading(false);
-                        return;
-                    }
-
-                    const now = new Date();
-                    const transaction = {
-                        amount,
-                        from: currentUser.uid,
-                        fromName: userData.name,
-                        fromEmail: userData.email,
-                        to: recipientUid,
-                        toName: recipientName,
-                        toEmail: recipientEmail,
-                        date: now.toISOString().split('T')[0],
-                        time: now.toTimeString().slice(0, 5),
-                        timestamp: now.getTime()
-                    };
-
-                    // Aggiorna saldi
-                    const newBalance = userData.balance - amount;
-                    await db.ref('users/' + currentUser.uid + '/balance').set(newBalance);
-
-                    const recipientSnapshot = await db.ref('users/' + recipientUid).once('value');
-                    const recipientData = recipientSnapshot.val();
-                    const recipientNewBalance = (recipientData.balance || 0) + amount;
-                    await db.ref('users/' + recipientUid + '/balance').set(recipientNewBalance);
-
-                    // Salva transazione
-                    await db.ref('transactions').push(transaction);
-
-                    setShowTransferModal(false);
-                    setTransferAmount('');
-                    setRecipientEmail('');
-                    
-                    alert(`€${amount.toFixed(2)} inviati con successo a ${recipientName}! ✅`);
-                } catch (error) {
-                    console.error('Errore trasferimento:', error);
-                    alert('Errore durante il trasferimento: ' + error.message);
-                }
-
-                setLoading(false);
-            };
-
-            const handleLogout = async () => {
-                try {
-                    await firebase.auth().signOut();
-                } catch (error) {
-                    console.error('Errore logout:', error);
-                }
-            };
-
-            if (initialLoading) {
-                return (
-                    <div className="min-h-screen bg-gradient-to-br from-purple-600 via-purple-700 to-indigo-800 flex items-center justify-center">
-                        <div className="text-center text-white">
-                            <div className="w-12 h-12 mx-auto mb-4"><Loader /></div>
-                            <p className="text-lg">Caricamento Bang...</p>
-                        </div>
-                    </div>
-                );
-            }
-
-            if (!currentUser || !userData) {
-                return (
-                    <div className="min-h-screen bg-gradient-to-br from-purple-600 via-purple-700 to-indigo-800 flex items-center justify-center p-4">
-                        <div className="bg-white rounded-3xl shadow-2xl w-full max-w-md p-8">
-                            <div className="text-center mb-8">
-                                <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-r from-purple-600 to-indigo-600 rounded-full mb-4">
-                                    <div className="w-10 h-10 text-white"><CreditCard /></div>
-                                </div>
-                                <h1 className="text-4xl font-bold text-gray-900">Bang</h1>
-                                <p className="text-gray-600 mt-2">Il tuo wallet digitale</p>
-                            </div>
-
-                            <div className="flex mb-6 bg-gray-100 rounded-lg p-1">
-                                <button onClick={() => setAuthMode('login')} className={`flex-1 py-2 rounded-md transition-all ${authMode === 'login' ? 'bg-white shadow-sm font-semibold' : ''}`}>
-                                    Login
-                                </button>
-                                <button onClick={() => setAuthMode('signup')} className={`flex-1 py-2 rounded-md transition-all ${authMode === 'signup' ? 'bg-white shadow-sm font-semibold' : ''}`}>
-                                    Registrati
-                                </button>
-                            </div>
-
-                            <div className="space-y-4">
-                                {authMode === 'signup' && (
-                                    <input 
-                                        type="text" 
-                                        placeholder="Nome completo" 
-                                        value={name} 
-                                        onChange={(e) => setName(e.target.value)} 
-                                        className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-600" 
-                                    />
-                                )}
-                                <input 
-                                    type="email" 
-                                    placeholder="Email" 
-                                    value={email} 
-                                    onChange={(e) => setEmail(e.target.value)} 
-                                    className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-600" 
-                                />
-                                <input 
-                                    type="password" 
-                                    placeholder="Password (min 6 caratteri)" 
-                                    value={password} 
-                                    onChange={(e) => setPassword(e.target.value)} 
-                                    onKeyPress={(e) => e.key === 'Enter' && !loading && handleAuth()} 
-                                    className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-600" 
-                                />
-                                <button 
-                                    onClick={handleAuth} 
-                                    disabled={loading} 
-                                    className="w-full bg-gradient-to-r from-purple-600 to-indigo-600 text-white py-3 rounded-lg font-semibold hover:shadow-lg transition-all disabled:opacity-50 flex items-center justify-center gap-2"
-                                >
-                                    {loading ? (
-                                        <>
-                                            <div className="w-5 h-5"><Loader /></div>
-                                            Caricamento...
-                                        </>
-                                    ) : (
-                                        authMode === 'login' ? 'Accedi' : 'Crea Account'
-                                    )}
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                );
-            }
-
-            return (
-                <div className="min-h-screen bg-gray-50">
-                    <div className="bg-gradient-to-r from-purple-600 to-indigo-600 text-white p-6 pb-32">
-                        <div className="max-w-4xl mx-auto">
-                            <div className="flex justify-between items-center mb-8">
-                                <div className="flex items-center gap-3">
-                                    <div className="w-8 h-8"><CreditCard /></div>
-                                    <h1 className="text-2xl font-bold">Bang</h1>
-                                </div>
-                                <button onClick={handleLogout} className="p-2 hover:bg-white/20 rounded-lg transition-all">
-                                    <div className="w-5 h-5"><LogOut /></div>
-                                </button>
-                            </div>
-                            <div className="text-center">
-                                <p className="text-purple-200 text-sm mb-2">Saldo disponibile</p>
-                                <h2 className="text-5xl font-bold mb-1">€{(userData.balance || 0).toFixed(2)}</h2>
-                                <p className="text-purple-200 text-sm">{userData.name}</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div className="max-w-4xl mx-auto px-4 -mt-20">
-                        <div className="bg-white rounded-2xl shadow-lg p-6 mb-6">
-                            <div className="grid grid-cols-2 gap-4">
-                                <button 
-                                    onClick={() => setShowTransferModal(true)} 
-                                    className="flex flex-col items-center gap-2 p-6 bg-gradient-to-br from-purple-500 to-indigo-500 text-white rounded-xl hover:shadow-lg transition-all"
-                                >
-                                    <div className="w-8 h-8"><Send /></div>
-                                    <span className="font-semibold">Invia</span>
-                                </button>
-                                <button 
-                                    onClick={() => alert('Funzionalità in arrivo! 🚀')} 
-                                    className="flex flex-col items-center gap-2 p-6 bg-gradient-to-br from-green-500 to-emerald-500 text-white rounded-xl hover:shadow-lg transition-all"
-                                >
-                                    <div className="w-8 h-8"><Plus /></div>
-                                    <span className="font-semibold">Ricarica</span>
-                                </button>
-                            </div>
-                            <div className="mt-6 pt-6 border-t">
-                                <p className="text-sm text-gray-600 mb-1">Il tuo IBAN</p>
-                                <p className="font-mono text-sm font-semibold">{userData.iban}</p>
-                            </div>
-                        </div>
-
-                        <div className="flex gap-2 mb-6">
-                            <button 
-                                onClick={() => setActiveTab('home')} 
-                                className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-lg font-semibold transition-all ${activeTab === 'home' ? 'bg-white shadow-md text-purple-600' : 'text-gray-600'}`}
-                            >
-                                <div className="w-5 h-5"><Home /></div>
-                                Home
-                            </button>
-                            <button 
-                                onClick={() => setActiveTab('transactions')} 
-                                className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-lg font-semibold transition-all ${activeTab === 'transactions' ? 'bg-white shadow-md text-purple-600' : 'text-gray-600'}`}
-                            >
-                                <div className="w-5 h-5"><History /></div>
-                                Transazioni
-                            </button>
-                        </div>
-
-                        {activeTab === 'home' && (
-                            <div className="bg-white rounded-2xl shadow-lg p-6 mb-6">
-                                <h3 className="text-xl font-bold mb-4">Ultime transazioni</h3>
-                                {transactions.length === 0 ? (
-                                    <div className="text-center py-12 text-gray-500">
-                                        <div className="w-12 h-12 mx-auto mb-3 opacity-50"><History /></div>
-                                        <p>Nessuna transazione ancora</p>
-                                        <p className="text-sm mt-1">Inizia a inviare denaro!</p>
-                                    </div>
-                                ) : (
-                                    <div className="space-y-3">
-                                        {transactions.slice(0, 5).map((tx) => (
-                                            <div key={tx.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-all">
-                                                <div className="flex items-center gap-3">
-                                                    <div className={`w-10 h-10 rounded-full flex items-center justify-center ${tx.type === 'received' ? 'bg-green-100' : 'bg-red-100'}`}>
-                                                        <div className={`w-5 h-5 ${tx.type === 'received' ? 'text-green-600' : 'text-red-600'}`}>
-                                                            {tx.type === 'received' ? <ArrowDownLeft /> : <ArrowUpRight />}
-                                                        </div>
-                                                    </div>
-                                                    <div>
-                                                        <p className="font-semibold">{tx.type === 'received' ? tx.fromName : tx.toName}</p>
-                                                        <p className="text-sm text-gray-500">{tx.date} - {tx.time}</p>
-                                                    </div>
-                                                </div>
-                                                <p className={`font-bold ${tx.type === 'received' ? 'text-green-600' : 'text-red-600'}`}>
-                                                    {tx.type === 'received' ? '+' : '-'}€{tx.amount.toFixed(2)}
-                                                </p>
-                                            </div>
-                                        ))}
-                                    </div>
-                                )}
-                            </div>
-                        )}
-
-                        {activeTab === 'transactions' && (
-                            <div className="bg-white rounded-2xl shadow-lg p-6 mb-6">
-                                <h3 className="text-xl font-bold mb-4">Tutte le transazioni</h3>
-                                {transactions.length === 0 ? (
-                                    <div className="text-center py-12 text-gray-500">
-                                        <div className="w-12 h-12 mx-auto mb-3 opacity-50"><History /></div>
-                                        <p>Nessuna transazione</p>
-                                    </div>
-                                ) : (
-                                    <div className="space-y-3">
-                                        {transactions.map((tx) => (
-                                            <div key={tx.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
-                                                <div className="flex items-center gap-3">
-                                                    <div className={`w-10 h-10 rounded-full flex items-center justify-center ${tx.type === 'received' ? 'bg-green-100' : 'bg-red-100'}`}>
-                                                        <div className={`w-5 h-5 ${tx.type === 'received' ? 'text-green-600' : 'text-red-600'}`}>
-                                                            {tx.type === 'received' ? <ArrowDownLeft /> : <ArrowUpRight />}
-                                                        </div>
-                                                    </div>
-                                                    <div>
-                                                        <p className="font-semibold">{tx.type === 'received' ? tx.fromName : tx.toName}</p>
-                                                        <p className="text-sm text-gray-500">{tx.date} - {tx.time}</p>
-                                                    </div>
-                                                </div>
-                                                <p className={`font-bold ${tx.type === 'received' ? 'text-green-600' : 'text-red-600'}`}>
-                                                    {tx.type === 'received' ? '+' : '-'}€{tx.amount.toFixed(2)}
-                                                </p>
-                                            </div>
-                                        ))}
-                                    </div>
-                                )}
-                            </div>
-                        )}
-                    </div>
-
-                    {showTransferModal && (
-                        <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-                            <div className="bg-white rounded-2xl max-w-md w-full p-6">
-                                <h3 className="text-2xl font-bold mb-6">Invia denaro</h3>
-                                <div className="space-y-4">
-                                    <div>
-                                        <label className="block text-sm font-semibold text-gray-700 mb-2">
-                                            Email destinatario
-                                        </label>
-                                        <input 
-                                            type="email" 
-                                            value={recipientEmail} 
-                                            onChange={(e) => setRecipientEmail(e.target.value)} 
-                                            className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-600" 
-                                            placeholder="mario@email.com" 
-                                        />
-                                    </div>
-                                    <div>
-                                        <label className="block text-sm font-semibold text-gray-700 mb-2">
-                                            Importo
-                                        </label>
-                                        <input 
-                                            type="number" 
-                                            step="0.01" 
-                                            value={transferAmount} 
-                                            onChange={(e) => setTransferAmount(e.target.value)} 
-                                            onKeyPress={(e) => e.key === 'Enter' && !loading && handleTransfer()} 
-                                            className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-600" 
-                                            placeholder="0.00" 
-                                        />
-                                        <p className="text-sm text-gray-500 mt-2">
-                                            Saldo disponibile: <span className="font-semibold">€{(userData.balance || 0).toFixed(2)}</span>
-                                        </p>
-                                    </div>
-                                    <div className="flex gap-3 mt-6">
-                                        <button 
-                                            onClick={() => setShowTransferModal(false)} 
-                                            disabled={loading} 
-                                            className="flex-1 py-3 bg-gray-200 rounded-lg font-semibold hover:bg-gray-300 transition-all disabled:opacity-50"
-                                        >
-                                            Annulla
-                                        </button>
-                                        <button 
-                                            onClick={handleTransfer} 
-                                            disabled={loading} 
-                                            className="flex-1 py-3 bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-lg font-semibold hover:shadow-lg transition-all disabled:opacity-50 flex items-center justify-center gap-2"
-                                        >
-                                            {loading ? (
-                                                <>
-                                                    <div className="w-5 h-5"><Loader /></div>
-                                                    Invio...
-                                                </>
-                                            ) : (
-                                                'Invia'
-                                            )}
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    )}
-                </div>
-            );
-        };
-
-        ReactDOM.render(<BangApp />, document.getElementById('root'));
-    </script>
+    <!-- App Configuration -->
+    <script src="firebase-config.js"></script>
+    <script src="app.js"></script>
 </body>
 </html>
